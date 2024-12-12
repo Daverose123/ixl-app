@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IXL and Read Theory Progress Tracker</title>
     <style>
-        /* General Styles */
+        /* Styling code */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -13,14 +13,12 @@
             padding: 0;
             text-align: center;
         }
-
         h1 {
             margin: 20px;
             color: #3b5998;
             font-size: 2rem;
             text-shadow: 1px 1px #ccc;
         }
-
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -29,7 +27,6 @@
             max-width: 1200px;
             margin: 0 auto;
         }
-
         .student-card {
             background: linear-gradient(135deg, #d9e6f2, #b2cce3);
             border-radius: 10px;
@@ -37,20 +34,17 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
-
         .student-card img {
             width: 80px;
             height: 80px;
             border-radius: 50%;
             margin-bottom: 10px;
         }
-
         .progress-circle-container {
             display: flex;
             justify-content: space-around;
             margin: 20px 0;
         }
-
         .progress-circle {
             position: relative;
             width: 80px;
@@ -63,9 +57,7 @@
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             border: 6px solid transparent;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-
         .progress-circle .label {
             position: absolute;
             top: 25%;
@@ -73,140 +65,52 @@
             font-weight: bold;
             color: #333;
         }
-
         .progress-circle .value {
             position: absolute;
             bottom: 25%;
             font-size: 0.9rem;
             font-weight: bold;
         }
-
-        .keypad {
-            display: none;
-            position: fixed;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            padding: 10px;
-            width: 120px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 10;
-        }
-
-        .keypad .keypad-display {
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #333;
-            text-align: center;
-        }
-
-        .keypad .keypad-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-        }
-
-        .keypad .key {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            font-size: 0.9rem;
-            background: #3b5998;
-            color: white;
-            border-radius: 5px;
-            line-height: 30px;
-            text-align: center;
-            cursor: pointer;
-            user-select: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .keypad .key:hover {
-            background: #4267b2;
-        }
-
-        .keypad .clear {
-            background: #f44336;
-        }
-
-        .keypad .clear:hover {
-            background: #e53935;
-        }
-
-        .keypad .confirm {
-            background: #4caf50;
-        }
-
-        .keypad .confirm:hover {
-            background: #45a049;
-        }
     </style>
 </head>
 <body>
     <h1>IXL and Read Theory Progress Tracker</h1>
     <div class="grid-container" id="student-grid"></div>
-    <div class="keypad" id="keypad">
-        <div id="keypad-display" class="keypad-display"></div>
-        <div class="keypad-grid">
-            <div class="key" onclick="addKey('1')">1</div>
-            <div class="key" onclick="addKey('2')">2</div>
-            <div class="key" onclick="addKey('3')">3</div>
-            <div class="key" onclick="addKey('4')">4</div>
-            <div class="key" onclick="addKey('5')">5</div>
-            <div class="key" onclick="addKey('6')">6</div>
-            <div class="key" onclick="addKey('7')">7</div>
-            <div class="key" onclick="addKey('8')">8</div>
-            <div class="key" onclick="addKey('9')">9</div>
-            <div class="key clear" onclick="clearKeypad()">Clear</div>
-            <div class="key" onclick="addKey('0')">0</div>
-            <div class="key confirm" onclick="saveKeypad()">✔</div>
-        </div>
-    </div>
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbyaNwXPkERKK0etVwfRqUyLOJZXXea17dkFiorCYShjZO9k84xRInSR4x4-ElppxZM-Tw/exec';
 
-        let students = [];
-        let activeStudent = null;
-        let activeMetric = null;
-
-        const keypad = document.getElementById('keypad');
-        const keypadDisplay = document.getElementById('keypad-display');
-
-        async function fetchStudentData() {
-            const response = await fetch(scriptURL);
-            return response.json();
+        // Dynamically assign image paths
+        function getImagePath(name) {
+            const sanitizedName = name.toLowerCase().replace(/\s+/g, '-');
+            return `images/${sanitizedName}.jpg`;
         }
 
-        async function saveStudentData() {
-            await fetch(scriptURL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(students),
-            });
+        async function fetchData() {
+            try {
+                const response = await fetch(scriptURL);
+                const data = await response.json();
+                renderStudents(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         }
 
-        function renderStudents() {
+        function renderStudents(students) {
             const studentGrid = document.getElementById('student-grid');
-            studentGrid.innerHTML = '';
-            students.forEach((student, index) => {
+            studentGrid.innerHTML = ''; // Clear existing content
+            students.forEach(student => {
                 const card = document.createElement('div');
                 card.classList.add('student-card');
-                const progress = student.progress || { reading: 0, language: 0, quizzes: 0 };
-
+                const imgPath = getImagePath(student.name);
                 card.innerHTML = `
-                    <img src="images/${student.image || 'default.jpg'}" alt="${student.name}">
+                    <img src="${imgPath}" alt="${student.name}" onerror="this.src='images/default.jpg'">
                     <h3>${student.name}</h3>
                     <div class="progress-circle-container">
                         ${['reading', 'language', 'quizzes']
                             .map(metric => `
-                                <div 
-                                    class="progress-circle" 
-                                    style="border-color: ${getColor(progress[metric])}" 
-                                    onclick="openKeypad(${index}, '${metric}', this)"
-                                >
-                                    <span class="label">${capitalize(metric)}</span>
-                                    <span class="value">${metric === 'quizzes' ? `${progress[metric]}/20` : `${progress[metric]}%`}</span>
+                                <div class="progress-circle">
+                                    <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
+                                    <span class="value">${metric === 'quizzes' ? `${student[metric]}/20` : `${student[metric]}%`}</span>
                                 </div>
                             `)
                             .join('')}
@@ -216,56 +120,7 @@
             });
         }
 
-        function getColor(value) {
-            if (value === 0) return 'red';
-            if (value < 50) return 'orange';
-            return 'green';
-        }
-
-        function capitalize(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-
-        function openKeypad(index, metric, element) {
-            activeStudent = students[index];
-            activeMetric = metric;
-
-            const rect = element.getBoundingClientRect();
-            keypad.style.left = `${Math.min(rect.left + window.scrollX, window.innerWidth - keypad.offsetWidth)}px`;
-            keypad.style.top = `${rect.top + rect.height + window.scrollY + 10}px`;
-            keypad.style.display = 'block';
-            keypadDisplay.textContent = ''; // Clear previous input
-        }
-
-        function addKey(value) {
-            keypadDisplay.textContent += value;
-        }
-
-        function clearKeypad() {
-            keypadDisplay.textContent = '';
-        }
-
-        async function saveKeypad() {
-            const value = parseInt(keypadDisplay.textContent, 10);
-            if (!isNaN(value)) {
-                activeStudent.progress[activeMetric] =
-                    activeMetric === 'quizzes' ? Math.min(value, 20) : Math.min(value, 100);
-                renderStudents();
-                await saveStudentData();
-            }
-            keypad.style.display = 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                students = await fetchStudentData();
-                renderStudents();
-            } catch (error) {
-                console.error('Error initializing app:', error);
-            }
-        });
-
-        window.openKeypad = openKeypad;
+        fetchData();
     </script>
 </body>
 </html>
