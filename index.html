@@ -71,6 +71,16 @@
             font-size: 0.9rem;
             font-weight: bold;
         }
+        .keypad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 5;
+        }
         .keypad {
             display: none;
             position: fixed;
@@ -81,6 +91,15 @@
             text-align: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             z-index: 10;
+        }
+        .keypad .close-button {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
         }
         .keypad .keypad-display {
             margin-bottom: 10px;
@@ -127,7 +146,9 @@
 <body>
     <h1>IXL and Read Theory Progress Tracker</h1>
     <div class="grid-container" id="student-grid"></div>
+    <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
     <div class="keypad" id="keypad">
+        <button class="close-button" onclick="closeKeypad()">✖</button>
         <div id="keypad-display" class="keypad-display"></div>
         <div class="keypad-grid">
             <div class="key" onclick="addKey('1')">1</div>
@@ -187,11 +208,17 @@
             activeStudent = students[index];
             activeMetric = metric;
             const keypad = document.getElementById('keypad');
-            const rect = element.getBoundingClientRect();
-            keypad.style.left = `${rect.left + window.scrollX}px`;
-            keypad.style.top = `${rect.top + rect.height + window.scrollY + 10}px`;
+            const overlay = document.getElementById('keypad-overlay');
+            overlay.style.display = 'block';
+            keypad.style.left = `calc(50% - ${keypad.offsetWidth / 2}px)`;
+            keypad.style.top = `calc(50% - ${keypad.offsetHeight / 2}px)`;
             keypad.style.display = 'block';
             document.getElementById('keypad-display').textContent = '';
+        }
+
+        function closeKeypad() {
+            document.getElementById('keypad').style.display = 'none';
+            document.getElementById('keypad-overlay').style.display = 'none';
         }
 
         function addKey(value) {
@@ -211,7 +238,7 @@
                 renderStudents();
                 updateGoogleSheets();
             }
-            document.getElementById('keypad').style.display = 'none';
+            closeKeypad();
         }
 
         async function updateGoogleSheets() {
