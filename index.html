@@ -243,10 +243,19 @@
 
         async function updateGoogleSheets() {
             try {
-                await fetch(scriptURL, {
+                const response = await fetch(scriptURL, {
                     method: 'POST',
-                    body: JSON.stringify(students),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ data: students }),
                 });
+
+                if (response.ok) {
+                    console.log('Data successfully updated in Google Sheets.');
+                } else {
+                    console.error('Failed to update Google Sheets. Status:', response.status);
+                }
             } catch (error) {
                 console.error('Error updating Google Sheets:', error);
             }
