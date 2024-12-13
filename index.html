@@ -186,7 +186,7 @@
     </div>
     <script>
         const GITHUB_API = 'https://api.github.com';
-        const TOKEN = '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'; // Replace this with your actual token
+        const TOKEN = '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';
         const REPO_OWNER = 'Daverose123';
         const REPO_NAME = 'Daverose123';
         const FILE_PATH = 'data.txt';
@@ -258,5 +258,53 @@
                     <h3>${student.name}</h3>
                     <div class="progress-circle-container">
                         ${['reading', 'language', 'quizzes'].map(metric => `
-                            <div class="progress-circle" onclick="openKeypad(${index}, '${metric}', this)">
-                                <span class="label
+                            <div class="progress-circle" onclick="openKeypad(${index}, '${metric}')">
+                                <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
+                                <span class="value">${student[metric]}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                studentGrid.appendChild(card);
+            });
+        }
+
+        function openKeypad(index, metric) {
+            activeStudent = students[index];
+            activeMetric = metric;
+            const keypad = document.getElementById('keypad');
+            const overlay = document.getElementById('keypad-overlay');
+            overlay.style.display = 'block';
+            keypad.style.display = 'block';
+            document.getElementById('keypad-display').textContent = '';
+        }
+
+        function closeKeypad() {
+            document.getElementById('keypad').style.display = 'none';
+            document.getElementById('keypad-overlay').style.display = 'none';
+        }
+
+        function addKey(value) {
+            const display = document.getElementById('keypad-display');
+            display.textContent += value;
+        }
+
+        function clearKeypad() {
+            document.getElementById('keypad-display').textContent = '';
+        }
+
+        function saveKeypad() {
+            const display = document.getElementById('keypad-display');
+            const value = parseInt(display.textContent, 10);
+            if (!isNaN(value)) {
+                activeStudent[activeMetric] = Math.min(value, activeMetric === 'quizzes' ? 20 : 100);
+                renderStudents();
+                updateFile();
+            }
+            closeKeypad();
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>
