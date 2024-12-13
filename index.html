@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IXL and Read Theory Progress Tracker</title>
     <style>
-        /* Styling code */
+        /* General styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -13,12 +13,15 @@
             padding: 0;
             text-align: center;
         }
+
         h1 {
             margin: 20px;
             color: #3b5998;
             font-size: 2rem;
             text-shadow: 1px 1px #ccc;
         }
+
+        /* Grid container for student cards */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -27,6 +30,8 @@
             max-width: 1200px;
             margin: 0 auto;
         }
+
+        /* Styling for student cards */
         .student-card {
             background: linear-gradient(135deg, #d9e6f2, #b2cce3);
             border-radius: 10px;
@@ -34,17 +39,21 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
+
         .student-card img {
             width: 80px;
             height: 80px;
             border-radius: 50%;
             margin-bottom: 10px;
         }
+
+        /* Progress circle container and individual circles */
         .progress-circle-container {
             display: flex;
             justify-content: space-around;
             margin: 20px 0;
         }
+
         .progress-circle {
             position: relative;
             width: 80px;
@@ -58,6 +67,7 @@
             cursor: pointer;
             border: 6px solid transparent;
         }
+
         .progress-circle .label {
             position: absolute;
             top: 25%;
@@ -65,12 +75,15 @@
             font-weight: bold;
             color: #333;
         }
+
         .progress-circle .value {
             position: absolute;
             bottom: 25%;
             font-size: 0.9rem;
             font-weight: bold;
         }
+
+        /* Keypad styles */
         .keypad-overlay {
             position: fixed;
             top: 0;
@@ -81,6 +94,7 @@
             display: none;
             z-index: 5;
         }
+
         .keypad {
             display: none;
             position: fixed;
@@ -92,6 +106,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             z-index: 10;
         }
+
         .keypad .close-button {
             position: absolute;
             top: 5px;
@@ -101,6 +116,7 @@
             font-size: 1.5rem;
             cursor: pointer;
         }
+
         .keypad .keypad-display {
             margin-bottom: 10px;
             font-size: 1.2rem;
@@ -108,11 +124,13 @@
             color: #333;
             text-align: center;
         }
+
         .keypad .keypad-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
+
         .keypad .key {
             display: inline-block;
             width: 40px;
@@ -126,18 +144,23 @@
             cursor: pointer;
             user-select: none;
         }
+
         .keypad .key:hover {
             background: #4267b2;
         }
+
         .keypad .clear {
             background: #f44336;
         }
+
         .keypad .clear:hover {
             background: #e53935;
         }
+
         .keypad .confirm {
             background: #4caf50;
         }
+
         .keypad .confirm:hover {
             background: #45a049;
         }
