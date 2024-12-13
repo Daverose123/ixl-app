@@ -37,13 +37,6 @@
             text-align: center;
         }
 
-        .student-card img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-
         .progress-circle-container {
             display: flex;
             justify-content: space-around;
@@ -64,59 +57,73 @@
             border: 6px solid transparent;
         }
 
-        .progress-circle .label {
-            position: absolute;
-            top: 25%;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #333;
+        .keypad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 5;
         }
 
-        .progress-circle .value {
-            position: absolute;
-            bottom: 25%;
-            font-size: 0.9rem;
-            font-weight: bold;
+        .keypad {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 2px solid black;
+            padding: 20px;
+            z-index: 200;
+            text-align: center;
+        }
+
+        .keypad button {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
         }
     </style>
 </head>
 <body>
     <h1>IXL and Read Theory Progress Tracker</h1>
     <div class="grid-container" id="student-grid"></div>
-    
-    <!-- Keypad section - Always visible -->
-    <div id="keypad-overlay" style="display: block; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); z-index: 100;"></div>
-    <div id="keypad" style="display: block; position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); background: white; border: 2px solid black; padding: 20px; z-index: 200; text-align: center;">
+
+    <!-- Keypad overlay and keypad -->
+    <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
+    <div id="keypad" class="keypad">
         <button onclick="closeKeypad()">✖</button>
         <div id="keypad-display" style="margin-bottom: 10px; font-size: 1.5rem; font-weight: bold;">Test Display</div>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-            <button style="width: 50px; height: 50px;" onclick="console.log('1')">1</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('2')">2</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('3')">3</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('4')">4</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('5')">5</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('6')">6</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('7')">7</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('8')">8</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('9')">9</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('0')">0</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('Clear')">Clear</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('Confirm')">✔</button>
+            <button onclick="addKey('1')">1</button>
+            <button onclick="addKey('2')">2</button>
+            <button onclick="addKey('3')">3</button>
+            <button onclick="addKey('4')">4</button>
+            <button onclick="addKey('5')">5</button>
+            <button onclick="addKey('6')">6</button>
+            <button onclick="addKey('7')">7</button>
+            <button onclick="addKey('8')">8</button>
+            <button onclick="addKey('9')">9</button>
+            <button onclick="clearKeypad()">Clear</button>
+            <button onclick="addKey('0')">0</button>
+            <button onclick="confirmKeypad()">✔</button>
         </div>
     </div>
 
     <script>
         let students = [];
 
-        // Temporary function to render test data
         function renderStudents() {
             const studentGrid = document.getElementById('student-grid');
             students = [
                 { name: "Student 1", reading: 10, language: 50, quizzes: 5 },
                 { name: "Student 2", reading: 20, language: 60, quizzes: 8 }
             ];
-            studentGrid.innerHTML = students.map(student => `
-                <div class="student-card">
+            studentGrid.innerHTML = students.map((student, index) => `
+                <div class="student-card" onclick="openKeypad(${index})">
                     <h3>${student.name}</h3>
                     <div class="progress-circle-container">
                         <div class="progress-circle"><span class="label">Reading</span><span class="value">${student.reading}</span></div>
@@ -127,13 +134,31 @@
             `).join('');
         }
 
-        // Debugging keypad functions
-        function openKeypad() {
-            console.log("Open Keypad Triggered");
+        function openKeypad(index) {
+            const keypad = document.getElementById('keypad');
+            const overlay = document.getElementById('keypad-overlay');
+            document.getElementById('keypad-display').textContent = `Editing ${students[index].name}`;
+            keypad.style.display = 'block';
+            overlay.style.display = 'block';
         }
 
         function closeKeypad() {
-            console.log("Close Keypad Triggered");
+            document.getElementById('keypad').style.display = 'none';
+            document.getElementById('keypad-overlay').style.display = 'none';
+        }
+
+        function addKey(value) {
+            const display = document.getElementById('keypad-display');
+            display.textContent += value;
+        }
+
+        function clearKeypad() {
+            document.getElementById('keypad-display').textContent = '';
+        }
+
+        function confirmKeypad() {
+            console.log("Confirm clicked");
+            closeKeypad();
         }
 
         renderStudents();
