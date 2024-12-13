@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎯 IXL and Read Theory Progress Tracker 📊</title>
     <style>
-        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -14,18 +13,16 @@
             text-align: center;
         }
 
-        /* Confetti Canvas Styling */
         .confetti-canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; 
-            z-index: 0; 
+            pointer-events: none;
+            z-index: 0;
         }
 
-        /* Header Styles */
         h1 {
             margin: 20px;
             font-size: 2.5rem;
@@ -44,9 +41,8 @@
             -webkit-text-fill-color: initial;
         }
 
-        /* Reset Button Styles */
         .reset-btn {
-            position: absolute;
+            position: fixed;
             top: 10px;
             right: 10px;
             padding: 10px 20px;
@@ -65,7 +61,6 @@
             background-color: #d32f2f;
         }
 
-        /* Countdown and Quote Containers */
         .countdown-container, .quote-container {
             margin: 10px auto 20px auto;
             padding: 10px;
@@ -84,36 +79,34 @@
             color: #555;
         }
 
-        /* Grid Container for Student Cards */
+        /* Grid with 4 columns */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* Student Card Styles */
         .student-card {
             background: linear-gradient(135deg, #d9e6f2, #b2cce3);
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
-            position: relative; 
-            z-index: 2; 
-            overflow: hidden; 
+            position: relative;
+            z-index: 2;
+            overflow: hidden;
         }
 
         .student-card img {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             margin-bottom: 10px;
         }
 
-        /* Student Name Styles with Medal Emojis */
         .student-name.completed::before {
             content: "🏅 ";
             font-size: 1.5rem;
@@ -124,18 +117,16 @@
             font-size: 1.5rem;
         }
 
-        /* Progress Circle Container */
         .progress-circle-container {
             display: flex;
             justify-content: space-around;
             margin: 20px 0;
         }
 
-        /* Progress Circle Styles */
         .progress-circle {
             position: relative;
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -144,6 +135,7 @@
             cursor: pointer;
             background-color: #e0e0e0;
             transition: box-shadow 0.3s;
+            font-size: 0.8rem;
         }
 
         .progress-circle[data-progress="low"] {
@@ -165,7 +157,7 @@
         .progress-circle .label {
             position: absolute;
             top: 25%;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: bold;
             color: #333;
         }
@@ -173,11 +165,10 @@
         .progress-circle .value {
             position: absolute;
             bottom: 25%;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: bold;
         }
 
-        /* Keypad Overlay Styles */
         .keypad-overlay {
             position: fixed;
             top: 0;
@@ -189,7 +180,6 @@
             z-index: 5;
         }
 
-        /* Keypad Modal Styles */
         .keypad {
             display: none;
             position: fixed;
@@ -264,22 +254,25 @@
             background: #45a049;
         }
 
-        /* Class Progress Bar Styles */
+        /* Class Progress Bar */
         #class-progress-bar {
             position: fixed;
-            top: 50%;
+            top: 20px;
             right: 20px;
             width: 50px;
             height: 300px;
             background-color: #e0e0e0;
             border-radius: 15px;
-            transform: translateY(-50%);
             box-shadow: 0 0 5px rgba(0,0,0,0.3);
             z-index: 1000;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 40px;
+            /* padding top to make space for text */
         }
 
-        /* Label on Progress Bar */
         #class-progress-bar::before {
             content: "Class Progress 🌟";
             position: absolute;
@@ -295,9 +288,9 @@
 
         #class-progress-fill {
             position: absolute;
-            bottom: 0; /* Starts from the bottom */
+            bottom: 0;
             width: 100%;
-            height: 0%; /* Will fill upwards as height increases */
+            height: 0%;
             background: linear-gradient(135deg, #4caf50, #81c784);
             border-radius: 15px;
             transition: height 1s ease-in-out;
@@ -305,8 +298,6 @@
     </style>
 </head>
 <body>
-    <!-- No audio or sound elements here -->
-    <!-- Reset Button -->
     <button class="reset-btn" onclick="requestReset()">Reset All Data</button>
 
     <h1>
@@ -390,10 +381,26 @@
             "Be kind, work hard, stay humble. 💕"
         ];
 
+        // Updated student list
         let students = JSON.parse(localStorage.getItem('students')) || [
             { id: 1, name: "Charlene", reading: 7, language: 8, quizzes: 13 },
             { id: 2, name: "Mieke", reading: 12, language: 2, quizzes: 3 },
             { id: 3, name: "Asa", reading: 2, language: 9, quizzes: 0 },
+            { id: 4, name: "Audrea", reading: 0, language: 0, quizzes: 0 },
+            { id: 5, name: "Zoe", reading: 0, language: 0, quizzes: 0 },
+            { id: 6, name: "Yolanda", reading: 0, language: 0, quizzes: 0 },
+            { id: 7, name: "Luna", reading: 0, language: 0, quizzes: 0 },
+            { id: 8, name: "Helena", reading: 0, language: 0, quizzes: 0 },
+            { id: 9, name: "Casper", reading: 0, language: 0, quizzes: 0 },
+            { id: 10, name: "Angelynn", reading: 0, language: 0, quizzes: 0 },
+            { id: 11, name: "Olivia", reading: 0, language: 0, quizzes: 0 },
+            { id: 12, name: "Hilary", reading: 0, language: 0, quizzes: 0 },
+            { id: 13, name: "Olivia", reading: 0, language: 0, quizzes: 0 }, // second Olivia
+            { id: 14, name: "Emily", reading: 0, language: 0, quizzes: 0 },
+            { id: 15, name: "Weggis", reading: 0, language: 0, quizzes: 0 },
+            { id: 16, name: "Gianna", reading: 0, language: 0, quizzes: 0 },
+            { id: 17, name: "Mika", reading: 0, language: 0, quizzes: 0 },
+            { id: 18, name: "Thomas", reading: 0, language: 0, quizzes: 0 },
         ];
 
         let activeStudent = null;
@@ -429,7 +436,6 @@
             const readingPercent = Math.min((student.reading / MAX_READING) * 100, 100);
             const languagePercent = Math.min((student.language / MAX_LANGUAGE) * 100, 100);
             const quizzesPercent = Math.min((student.quizzes / MAX_QUIZZES) * 100, 100);
-            console.log(`${student.name} - Reading: ${readingPercent}%, Language: ${languagePercent}%, Quizzes: ${quizzesPercent}%`);
             return (readingPercent === 100 && languagePercent === 100 && quizzesPercent === 100);
         }
 
@@ -464,7 +470,6 @@
             const hasTriggered = localStorage.getItem(confettiKey);
 
             if (!hasTriggered) {
-                console.log(`Celebrating completion for ${student.name}`);
                 triggerStudentConfetti(student.id);
                 localStorage.setItem(confettiKey, 'true');
 
@@ -475,9 +480,8 @@
             }
         }
 
-        // Massive Confetti Celebration (no sound)
         function triggerMassiveConfetti() {
-            const duration = 5000; // 5 seconds of confetti
+            const duration = 5000;
             const end = Date.now() + duration;
             const colors = ['#bb0000', '#ffffff', '#00bb00', '#0000bb', '#ffbb00', '#00bbbb', '#bb00bb'];
 
@@ -536,24 +540,31 @@
                 card.classList.add('student-card');
                 card.id = `student-${student.id}`;
                 const imgPath = `${IMAGE_BASE_URL}${student.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
+                const readingPercent = Math.min((student.reading / MAX_READING) * 100, 100);
+                const languagePercent = Math.min((student.language / MAX_LANGUAGE) * 100, 100);
+                const quizzesPercent = Math.min((student.quizzes / MAX_QUIZZES) * 100, 100);
+
+                const readingProgress = readingPercent === 100 ? 'high' : readingPercent < 50 ? 'low' : 'medium';
+                const languageProgress = languagePercent === 100 ? 'high' : languagePercent < 50 ? 'low' : 'medium';
+                const quizzesProgress = quizzesPercent === 100 ? 'high' : quizzesPercent < 50 ? 'low' : 'medium';
+
                 card.innerHTML = `
                     <canvas id="confetti-${student.id}" class="confetti-canvas"></canvas>
                     <img src="${imgPath}" alt="${student.name}" onerror="this.src='${IMAGE_BASE_URL}default.jpg'">
                     <h3 class="student-name">${student.name}</h3>
                     <div class="progress-circle-container">
-                        ${['reading', 'language', 'quizzes'].map(metric => {
-                            const max = metric === 'reading' || metric === 'language' ? MAX_READING : MAX_QUIZZES;
-                            const value = student[metric];
-                            const percent = Math.min((value / max) * 100, 100);
-                            const progress = percent === 100 ? 'high' : percent < 50 ? 'low' : 'medium';
-                            return `
-                                <div class="progress-circle" 
-                                     data-progress="${progress}" 
-                                     onclick="openKeypad(${index}, '${metric}', this)">
-                                    <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
-                                    <span class="value">${student[metric]}</span>
-                                </div>`;
-                        }).join('')}
+                        <div class="progress-circle" data-progress="${readingProgress}" onclick="openKeypad(${index}, 'reading', this)">
+                            <span class="label">Reading</span>
+                            <span class="value">${student.reading}</span>
+                        </div>
+                        <div class="progress-circle" data-progress="${languageProgress}" onclick="openKeypad(${index}, 'language', this)">
+                            <span class="label">Language</span>
+                            <span class="value">${student.language}</span>
+                        </div>
+                        <div class="progress-circle" data-progress="${quizzesProgress}" onclick="openKeypad(${index}, 'quizzes', this)">
+                            <span class="label">Quizzes</span>
+                            <span class="value">${student.quizzes}</span>
+                        </div>
                     </div>
                 `;
                 studentGrid.appendChild(card);
@@ -663,5 +674,3 @@
     </script>
 </body>
 </html>
-
-
