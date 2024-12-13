@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
     <title>🎯 IXL and Read Theory Progress Tracker 📊</title>
     <style>
-        /* Existing CSS... */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -85,7 +84,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
             position: relative; /* Ensure stacking context */
-            z-index: 2; /* Ensure it's above fireworks */
+            z-index: 2; /* Ensure it's above confetti */
         }
 
         .student-card img {
@@ -231,9 +230,6 @@
     </style>
 </head>
 <body>
-    <!-- Fireworks Container -->
-    <canvas id="fireworks-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;"></canvas>
-
     <button class="reset-btn" onclick="requestReset()">Reset All Data</button>
     <h1>
         <span class="emoji">🎯</span> IXL and Read Theory Progress Tracker <span class="emoji">📊</span>
@@ -264,9 +260,11 @@
             <div class="key confirm" onclick="saveKeypad()">✔</div>
         </div>
     </div>
-    <!-- Fireworks.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.0.0/dist/fireworks.min.js"></script>
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script>
+        // Existing JavaScript Code with Confetti Implementation
+
         const IMAGE_BASE_URL = 'https://raw.githubusercontent.com/Daverose123/ixl-app/main/images/';
         const MAX_READING = 15, MAX_LANGUAGE = 15, MAX_QUIZZES = 20;
         const PIN_CODE = '4296';
@@ -345,33 +343,6 @@
             localStorage.setItem('students', JSON.stringify(students));
         }
 
-        // Initialize Fireworks
-        let fireworksInstance;
-
-        function initFireworks() {
-            const container = document.getElementById('fireworks-canvas');
-            fireworksInstance = new Fireworks(container, {
-                speed: 2,
-                acceleration: 1.05,
-                friction: 0.98,
-                gravity: 1.5,
-                particles: 50,
-                trace: 3,
-                explosion: 5,
-                autoresize: true,
-                brightness: { min: 50, max: 80 },
-                decay: { min: 0.015, max: 0.03 },
-                flickering: 50,
-                opacity: { min: 0, max: 1 },
-                angle: { min: 0, max: 360 },
-                spread: { min: 10, max: 360 },
-                sound: {
-                    enable: false,
-                },
-            });
-            fireworksInstance.start();
-        }
-
         // Function to check if all progress circles are green
         function checkAllGreen() {
             for (let student of students) {
@@ -387,30 +358,44 @@
             return true;
         }
 
-        // Function to trigger fireworks if eligible
-        function triggerFireworksIfEligible() {
+        // Function to trigger confetti if eligible
+        function triggerConfettiIfEligible() {
             const allGreen = checkAllGreen();
             if (!allGreen) return;
 
             const now = new Date();
             const currentMonth = now.getMonth();
-            const fireworksTriggeredMonth = localStorage.getItem('fireworksTriggeredMonth');
+            const confettiTriggeredMonth = localStorage.getItem('confettiTriggeredMonth');
 
-            if (fireworksTriggeredMonth === String(currentMonth)) {
-                // Fireworks already triggered this month
+            if (confettiTriggeredMonth === String(currentMonth)) {
+                // Confetti already triggered this month
                 return;
             }
 
-            // Trigger fireworks
-            initFireworks();
+            // Trigger confetti
+            launchConfetti();
 
-            // Mark fireworks as triggered for this month
-            localStorage.setItem('fireworksTriggeredMonth', String(currentMonth));
+            // Mark confetti as triggered for this month
+            localStorage.setItem('confettiTriggeredMonth', String(currentMonth));
+        }
 
-            // Stop fireworks after 10 seconds
+        // Function to launch confetti
+        function launchConfetti() {
+            // Basic confetti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            // Optional: Additional bursts
             setTimeout(() => {
-                fireworksInstance.stop();
-            }, 10000);
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }, 1000);
         }
 
         // Render students data
@@ -442,8 +427,8 @@
                 studentGrid.appendChild(card);
             });
 
-            // After rendering, check for fireworks
-            triggerFireworksIfEligible();
+            // After rendering, check for confetti
+            triggerConfettiIfEligible();
         }
 
         // Reset data manually with PIN
@@ -522,8 +507,8 @@
                 saveToLocalStorage();
                 localStorage.setItem('lastMonth', currentMonth);
 
-                // Also reset fireworks trigger
-                localStorage.removeItem('fireworksTriggeredMonth');
+                // Also reset confetti trigger
+                localStorage.removeItem('confettiTriggeredMonth');
             }
         }
 
@@ -535,4 +520,3 @@
     </script>
 </body>
 </html>
-
