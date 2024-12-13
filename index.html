@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IXL and Read Theory Progress Tracker</title>
     <style>
-        /* General styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -38,13 +37,6 @@
             text-align: center;
         }
 
-        .student-card img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-
         .progress-circle-container {
             display: flex;
             justify-content: space-around;
@@ -62,7 +54,6 @@
             align-items: center;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
             cursor: pointer;
-            border: 6px solid transparent;
         }
 
         .progress-circle .label {
@@ -138,7 +129,6 @@
             line-height: 40px;
             text-align: center;
             cursor: pointer;
-            user-select: none;
         }
 
         .keypad .key:hover {
@@ -186,7 +176,6 @@
     </div>
     <script>
         const FILE_URL = 'https://raw.githubusercontent.com/Daverose123/ixl-app/main/data.txt';
-
         let students = [];
         let activeStudent = null;
         let activeMetric = null;
