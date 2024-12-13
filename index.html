@@ -79,7 +79,7 @@
             color: #555;
         }
 
-        /* Grid with 4 columns */
+        /* 4 columns for student cards */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -254,36 +254,32 @@
             background: #45a049;
         }
 
-        /* Class Progress Bar */
-        #class-progress-bar {
+        /* Progress Wrapper (with label above and bar below) */
+        #progress-wrapper {
             position: fixed;
-            top: 20px;
+            top: 80px;
             right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #progress-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        #class-progress-bar {
+            position: relative;
             width: 50px;
             height: 300px;
             background-color: #e0e0e0;
             border-radius: 15px;
             box-shadow: 0 0 5px rgba(0,0,0,0.3);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding-top: 40px;
-            /* padding top to make space for text */
-        }
-
-        #class-progress-bar::before {
-            content: "Class Progress 🌟";
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem;
-            color: #333;
-            font-weight: bold;
-            text-align: center;
-            width: 100%;
+            overflow: hidden;
         }
 
         #class-progress-fill {
@@ -314,8 +310,12 @@
 
     <div class="grid-container" id="student-grid"></div>
 
-    <div id="class-progress-bar">
-        <div id="class-progress-fill"></div>
+    <!-- Progress Wrapper with Label Above Bar -->
+    <div id="progress-wrapper">
+        <div id="progress-label">Class Progress 🌟</div>
+        <div id="class-progress-bar">
+            <div id="class-progress-fill"></div>
+        </div>
     </div>
 
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
@@ -381,7 +381,6 @@
             "Be kind, work hard, stay humble. 💕"
         ];
 
-        // Updated student list
         let students = JSON.parse(localStorage.getItem('students')) || [
             { id: 1, name: "Charlene", reading: 7, language: 8, quizzes: 13 },
             { id: 2, name: "Mieke", reading: 12, language: 2, quizzes: 3 },
@@ -393,9 +392,9 @@
             { id: 8, name: "Helena", reading: 0, language: 0, quizzes: 0 },
             { id: 9, name: "Casper", reading: 0, language: 0, quizzes: 0 },
             { id: 10, name: "Angelynn", reading: 0, language: 0, quizzes: 0 },
-            { id: 11, name: "Olivia", reading: 0, language: 0, quizzes: 0 },
+            { id: 11, name: "Olivia Ou", reading: 0, language: 0, quizzes: 0 },
             { id: 12, name: "Hilary", reading: 0, language: 0, quizzes: 0 },
-            { id: 13, name: "Olivia", reading: 0, language: 0, quizzes: 0 }, // second Olivia
+            { id: 13, name: "Olivia Lin", reading: 0, language: 0, quizzes: 0 }, 
             { id: 14, name: "Emily", reading: 0, language: 0, quizzes: 0 },
             { id: 15, name: "Weggis", reading: 0, language: 0, quizzes: 0 },
             { id: 16, name: "Gianna", reading: 0, language: 0, quizzes: 0 },
@@ -540,6 +539,7 @@
                 card.classList.add('student-card');
                 card.id = `student-${student.id}`;
                 const imgPath = `${IMAGE_BASE_URL}${student.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
+
                 const readingPercent = Math.min((student.reading / MAX_READING) * 100, 100);
                 const languagePercent = Math.min((student.language / MAX_LANGUAGE) * 100, 100);
                 const quizzesPercent = Math.min((student.quizzes / MAX_QUIZZES) * 100, 100);
