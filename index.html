@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
     <title>🎯 IXL and Read Theory Progress Tracker 📊</title>
     <style>
         body {
@@ -48,6 +48,24 @@
 
         .reset-btn:hover {
             background-color: #d32f2f;
+        }
+
+        .countdown-container, .quote-container {
+            margin: 10px auto 20px auto;
+            padding: 10px;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .countdown-container span, .quote-container span {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .quote-container {
+            font-style: italic;
+            font-size: 1.1rem;
+            color: #555;
         }
 
         .grid-container {
@@ -214,6 +232,12 @@
     <h1>
         <span class="emoji">🎯</span> IXL and Read Theory Progress Tracker <span class="emoji">📊</span>
     </h1>
+    <div class="countdown-container">
+        <span id="days-left"></span>
+    </div>
+    <div class="quote-container">
+        <span id="daily-quote"></span>
+    </div>
     <div class="grid-container" id="student-grid"></div>
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
     <div id="keypad" class="keypad">
@@ -239,6 +263,40 @@
         const MAX_READING = 15, MAX_LANGUAGE = 15, MAX_QUIZZES = 20;
         const PIN_CODE = '4296';
 
+        // Motivational quotes for G3 kids (30 quotes)
+        const QUOTES = [
+            "Believe in yourself, you’ve got this! 🌟",
+            "Every mistake is a chance to learn something new. 📚",
+            "Keep trying, your effort will pay off! 💪",
+            "You are braver than you think and smarter than you know. 🦁",
+            "A small step each day leads to big results. 🏆",
+            "Your kindness makes the world brighter. 🌈",
+            "Learning is an adventure—enjoy the journey! 🚀",
+            "Be proud of every progress you make, no matter how small. 🌱",
+            "Challenges help your brain grow stronger. 💡",
+            "Your smile can light up a whole classroom! 😄",
+            "Teamwork makes the dream work. 🤝",
+            "Stay curious and keep asking questions. 🔍",
+            "Your ideas matter—share them! 💬",
+            "You are important, and your work matters. ⭐",
+            "Be patient and keep practicing. 🎶",
+            "Mistakes show that you are trying. ✔️",
+            "Celebrate your victories, big and small. 🎉",
+            "Be the reason someone smiles today. 😊",
+            "The more you learn, the more you grow. 🌳",
+            "Don’t give up! Great things take time. ⏳",
+            "You can do amazing things, one step at a time. 🏅",
+            "Your determination is powerful. ⚡",
+            "Confidence comes from doing your best. 🌞",
+            "Dream big and work hard to achieve it. 🌙",
+            "Your uniqueness is your strength. 🌸",
+            "Reading expands your imagination. 📖",
+            "Keep an open mind, discover new things. 🗺️",
+            "Practice makes you better and better. 🎨",
+            "Your effort is worth more than your outcome. 🎈",
+            "Be kind, work hard, stay humble. 💕"
+        ];
+
         let students = JSON.parse(localStorage.getItem('students')) || [
             { name: "Charlene", reading: 7, language: 8, quizzes: 13 },
             { name: "Mieke", reading: 12, language: 2, quizzes: 3 },
@@ -248,10 +306,38 @@
         let activeStudent = null;
         let activeMetric = null;
 
+        // Function to calculate days left in the month
+        function calculateDaysLeft() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+            const today = now.getDate();
+            const daysLeft = totalDays - today;
+            return daysLeft;
+        }
+
+        // Display days left in the month
+        function displayDaysLeft() {
+            const daysLeft = calculateDaysLeft();
+            const daysLeftElem = document.getElementById('days-left');
+            daysLeftElem.textContent = `📅 Only ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left this month! Keep going! 🎉`;
+        }
+
+        // Show daily quote
+        function showDailyQuote() {
+            const today = new Date();
+            const dayOfMonth = today.getDate();
+            const quoteIndex = (dayOfMonth - 1) % QUOTES.length; 
+            document.getElementById('daily-quote').textContent = QUOTES[quoteIndex];
+        }
+
+        // Save to local storage
         function saveToLocalStorage() {
             localStorage.setItem('students', JSON.stringify(students));
         }
 
+        // Render students data
         function renderStudents() {
             const studentGrid = document.getElementById('student-grid');
             studentGrid.innerHTML = '';
@@ -281,6 +367,7 @@
             });
         }
 
+        // Reset data manually with PIN
         function requestReset() {
             const pin = prompt('Enter PIN to reset all data:');
             if (pin === PIN_CODE) {
@@ -297,6 +384,7 @@
             }
         }
 
+        // Open keypad for editing values
         function openKeypad(index, metric, element) {
             activeStudent = students[index];
             activeMetric = metric;
@@ -340,7 +428,28 @@
             closeKeypad();
         }
 
+        // Automatic monthly reset
+        function monthlyResetCheck() {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const storedMonth = localStorage.getItem('lastMonth');
+            if (storedMonth === null || parseInt(storedMonth, 10) !== currentMonth) {
+                // New month detected, reset all data
+                students.forEach(student => {
+                    student.reading = 0;
+                    student.language = 0;
+                    student.quizzes = 0;
+                });
+                saveToLocalStorage();
+                localStorage.setItem('lastMonth', currentMonth);
+            }
+        }
+
+        // Initial setup
+        monthlyResetCheck();
         renderStudents();
+        displayDaysLeft();
+        showDailyQuote();
     </script>
 </body>
 </html>
