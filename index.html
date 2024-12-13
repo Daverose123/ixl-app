@@ -54,13 +54,12 @@
             position: relative;
             width: 80px;
             height: 80px;
-            background-color: #e0e0e0;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            cursor: pointer;
-            border: 6px solid transparent;
+            border: 2px solid transparent;
+            overflow: hidden;
         }
 
         .progress-circle .label {
@@ -76,6 +75,10 @@
             bottom: 25%;
             font-size: 0.9rem;
             font-weight: bold;
+        }
+
+        .progress-circle[data-selected="true"] {
+            border: 4px solid blue;
         }
 
         .keypad-overlay {
@@ -190,10 +193,9 @@
         const MAX_READING = 15, MAX_LANGUAGE = 15, MAX_QUIZZES = 20;
 
         let students = JSON.parse(localStorage.getItem('students')) || [
-            { name: "Angelynn", reading: 10, language: 8, quizzes: 12 },
-            { name: "Asa", reading: 7, language: 12, quizzes: 15 },
-            { name: "Audrea", reading: 11, language: 14, quizzes: 16 },
-            { name: "Casper", reading: 5, language: 9, quizzes: 10 },
+            { name: "Charlene", reading: 7, language: 8, quizzes: 23 },
+            { name: "Mieke", reading: 12, language: 2, quizzes: 3 },
+            { name: "Asa", reading: 2, language: 9, quizzes: 0 },
             // Add more students
         ];
 
@@ -220,7 +222,10 @@
                             const percent = Math.min((student[metric] / max) * 100, 100);
                             const color = percent < 50 ? 'red' : percent < 80 ? 'yellow' : 'green';
                             return `
-                                <div class="progress-circle" style="background-image: conic-gradient(${color} ${percent}%, #e0e0e0 ${percent}%);" onclick="openKeypad(${index}, '${metric}')">
+                                <div class="progress-circle" 
+                                     data-selected="false" 
+                                     style="background: conic-gradient(${color} ${percent}%, #e0e0e0 ${percent}%);" 
+                                     onclick="openKeypad(${index}, '${metric}', this)">
                                     <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
                                     <span class="value">${student[metric]}</span>
                                 </div>`;
@@ -231,7 +236,7 @@
             });
         }
 
-        function openKeypad(index, metric) {
+        function openKeypad(index, metric, element) {
             activeStudent = students[index];
             activeMetric = metric;
             const keypad = document.getElementById('keypad');
@@ -239,6 +244,14 @@
             overlay.style.display = 'block';
             keypad.style.display = 'block';
             document.getElementById('keypad-display').textContent = '';
+
+            // Reset other circles
+            document.querySelectorAll('.progress-circle').forEach(circle => {
+                circle.dataset.selected = "false";
+            });
+
+            // Highlight the active circle
+            element.dataset.selected = "true";
         }
 
         function closeKeypad() {
