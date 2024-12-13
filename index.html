@@ -13,7 +13,7 @@
             text-align: center;
         }
 
-        h1 {
+               h1 {
             margin: 20px;
             font-size: 2.5rem;
             font-weight: bold;
@@ -29,21 +29,28 @@
         }
 
         h1::before {
-            content: "📚";
+            content: "🎯";
             position: absolute;
             left: -40px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 2rem;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #4267b2, #3b5998);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         h1::after {
-            content: "⭐";
+            content: "📊";
             position: absolute;
             right: -40px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 2rem;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #4267b2, #3b5998);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         }
 
         .reset-btn {
