@@ -63,6 +63,7 @@
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             border: 6px solid transparent;
+            transition: all 0.2s ease-in-out;
         }
 
         .progress-circle .label {
@@ -80,6 +81,12 @@
             font-weight: bold;
         }
 
+        .progress-circle.selected {
+            border-color: #4caf50;
+            box-shadow: 0 0 10px #4caf50;
+            transform: scale(1.1);
+        }
+
         .keypad-overlay {
             position: fixed;
             top: 0;
@@ -91,20 +98,20 @@
             z-index: 5;
         }
 
-.keypad {
-    display: none;
-    position: fixed;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 10px;
-    padding: 20px;
-    width: 150px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    z-index: 10;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
+        .keypad {
+            display: none;
+            position: fixed;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 20px;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            transform: translate(-50%, -50%);
+            top: 50%;
+            left: 50%;
+        }
 
         .keypad .close-button {
             position: absolute;
@@ -114,6 +121,17 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
+        }
+
+        .keypad .keypad-info {
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: #333;
+            text-align: center;
+        }
+
+        .keypad .keypad-info p {
+            margin: 5px 0;
         }
 
         .keypad .keypad-display {
@@ -171,6 +189,10 @@
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
     <div class="keypad" id="keypad">
         <button class="close-button" onclick="closeKeypad()">✖</button>
+        <div class="keypad-info">
+            <p><strong>Student:</strong> <span id="selected-student"></span></p>
+            <p><strong>Metric:</strong> <span id="selected-metric"></span></p>
+        </div>
         <div id="keypad-display" class="keypad-display"></div>
         <div class="keypad-grid">
             <div class="key" onclick="addKey('1')">1</div>
@@ -188,30 +210,13 @@
         </div>
     </div>
     <script>
-        let students = [];
+        let students = [
+            { name: "John", reading: 50, language: 60, quizzes: 10 },
+            { name: "Jane", reading: 70, language: 80, quizzes: 15 },
+            { name: "Jim", reading: 40, language: 50, quizzes: 12 },
+        ];
         let activeStudent = null;
         let activeMetric = null;
-
-        function saveToLocalStorage() {
-            localStorage.setItem('students', JSON.stringify(students));
-            console.log('Data saved to LocalStorage!');
-        }
-
-        function loadFromLocalStorage() {
-            const data = localStorage.getItem('students');
-            if (data) {
-                students = JSON.parse(data);
-                renderStudents();
-            } else {
-                students = [
-                    { name: 'Alice', reading: 70, language: 80, quizzes: 15 },
-                    { name: 'Bob', reading: 60, language: 90, quizzes: 18 },
-                    { name: 'Charlie', reading: 50, language: 70, quizzes: 10 },
-                ];
-                saveToLocalStorage();
-                renderStudents();
-            }
-        }
 
         function renderStudents() {
             const studentGrid = document.getElementById('student-grid');
@@ -237,14 +242,29 @@
         function openKeypad(index, metric) {
             activeStudent = students[index];
             activeMetric = metric;
-            document.getElementById('keypad-overlay').style.display = 'block';
-            document.getElementById('keypad').style.display = 'block';
+
+            document.getElementById('selected-student').textContent = activeStudent.name;
+            document.getElementById('selected-metric').textContent = metric.charAt(0).toUpperCase() + metric.slice(1);
+
+            document.querySelectorAll('.progress-circle').forEach(circle => circle.classList.remove('selected'));
+            const circles = document.querySelectorAll('.progress-circle-container')[index].children;
+            Array.from(circles).forEach(circle => {
+                if (circle.querySelector('.label').textContent.toLowerCase() === metric.toLowerCase()) {
+                    circle.classList.add('selected');
+                }
+            });
+
+            const keypad = document.getElementById('keypad');
+            const overlay = document.getElementById('keypad-overlay');
+            overlay.style.display = 'block';
+            keypad.style.display = 'block';
             document.getElementById('keypad-display').textContent = '';
         }
 
         function closeKeypad() {
             document.getElementById('keypad').style.display = 'none';
             document.getElementById('keypad-overlay').style.display = 'none';
+            document.querySelectorAll('.progress-circle').forEach(circle => circle.classList.remove('selected'));
         }
 
         function addKey(value) {
@@ -262,12 +282,11 @@
             if (!isNaN(value)) {
                 activeStudent[activeMetric] = Math.min(value, activeMetric === 'quizzes' ? 20 : 100);
                 renderStudents();
-                saveToLocalStorage();
             }
             closeKeypad();
         }
 
-        document.addEventListener('DOMContentLoaded', loadFromLocalStorage);
+        renderStudents();
     </script>
 </body>
 </html>
