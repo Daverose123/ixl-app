@@ -37,6 +37,13 @@
             text-align: center;
         }
 
+        .student-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
         .progress-circle-container {
             display: flex;
             justify-content: space-around;
@@ -52,10 +59,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             border: 6px solid transparent;
-            transition: all 0.2s ease-in-out;
         }
 
         .progress-circle .label {
@@ -71,12 +76,6 @@
             bottom: 25%;
             font-size: 0.9rem;
             font-weight: bold;
-        }
-
-        .progress-circle.selected {
-            border-color: #007bff;
-            box-shadow: 0 0 10px #007bff;
-            transform: scale(1.1);
         }
 
         .keypad-overlay {
@@ -100,9 +99,9 @@
             text-align: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             z-index: 10;
-            transform: translate(-50%, -50%);
-            top: 50%;
             left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .keypad .close-button {
@@ -168,7 +167,7 @@
     <h1>IXL and Read Theory Progress Tracker</h1>
     <div class="grid-container" id="student-grid"></div>
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
-    <div id="keypad" class="keypad">
+    <div class="keypad" id="keypad">
         <button class="close-button" onclick="closeKeypad()">✖</button>
         <div id="keypad-display" class="keypad-display"></div>
         <div class="keypad-grid">
@@ -187,13 +186,23 @@
         </div>
     </div>
     <script>
+        const IMAGE_BASE_URL = 'https://raw.githubusercontent.com/Daverose123/ixl-app/main/images/';
+        const MAX_READING = 15, MAX_LANGUAGE = 15, MAX_QUIZZES = 20;
+
         let students = JSON.parse(localStorage.getItem('students')) || [
-            { name: "John", reading: 50, language: 60, quizzes: 10 },
-            { name: "Jane", reading: 70, language: 80, quizzes: 15 },
-            { name: "Jim", reading: 40, language: 50, quizzes: 12 },
+            { name: "Angelynn", reading: 10, language: 8, quizzes: 12 },
+            { name: "Asa", reading: 7, language: 12, quizzes: 15 },
+            { name: "Audrea", reading: 11, language: 14, quizzes: 16 },
+            { name: "Casper", reading: 5, language: 9, quizzes: 10 },
+            // Add more students
         ];
+
         let activeStudent = null;
         let activeMetric = null;
+
+        function saveToLocalStorage() {
+            localStorage.setItem('students', JSON.stringify(students));
+        }
 
         function renderStudents() {
             const studentGrid = document.getElementById('student-grid');
@@ -201,15 +210,21 @@
             students.forEach((student, index) => {
                 const card = document.createElement('div');
                 card.classList.add('student-card');
+                const imgPath = `${IMAGE_BASE_URL}${student.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
                 card.innerHTML = `
+                    <img src="${imgPath}" alt="${student.name}" onerror="this.src='${IMAGE_BASE_URL}default.jpg'">
                     <h3>${student.name}</h3>
                     <div class="progress-circle-container">
-                        ${['reading', 'language', 'quizzes'].map(metric => `
-                            <div class="progress-circle" onclick="openKeypad(${index}, '${metric}')">
-                                <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
-                                <span class="value">${student[metric]}</span>
-                            </div>
-                        `).join('')}
+                        ${['reading', 'language', 'quizzes'].map(metric => {
+                            const max = metric === 'reading' || metric === 'language' ? 15 : 20;
+                            const percent = Math.min((student[metric] / max) * 100, 100);
+                            const color = percent < 50 ? 'red' : percent < 80 ? 'yellow' : 'green';
+                            return `
+                                <div class="progress-circle" style="background-image: conic-gradient(${color} ${percent}%, #e0e0e0 ${percent}%);" onclick="openKeypad(${index}, '${metric}')">
+                                    <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
+                                    <span class="value">${student[metric]}</span>
+                                </div>`;
+                        }).join('')}
                     </div>
                 `;
                 studentGrid.appendChild(card);
@@ -219,15 +234,6 @@
         function openKeypad(index, metric) {
             activeStudent = students[index];
             activeMetric = metric;
-
-            document.querySelectorAll('.progress-circle').forEach(circle => circle.classList.remove('selected'));
-            const circles = document.querySelectorAll('.progress-circle-container')[index].children;
-            Array.from(circles).forEach(circle => {
-                if (circle.querySelector('.label').textContent.toLowerCase() === metric.toLowerCase()) {
-                    circle.classList.add('selected');
-                }
-            });
-
             const keypad = document.getElementById('keypad');
             const overlay = document.getElementById('keypad-overlay');
             overlay.style.display = 'block';
@@ -238,7 +244,6 @@
         function closeKeypad() {
             document.getElementById('keypad').style.display = 'none';
             document.getElementById('keypad-overlay').style.display = 'none';
-            document.querySelectorAll('.progress-circle').forEach(circle => circle.classList.remove('selected'));
         }
 
         function addKey(value) {
@@ -254,9 +259,9 @@
             const display = document.getElementById('keypad-display');
             const value = parseInt(display.textContent, 10);
             if (!isNaN(value)) {
-                activeStudent[activeMetric] = Math.min(value, activeMetric === 'quizzes' ? 20 : 100);
-                localStorage.setItem('students', JSON.stringify(students));
+                activeStudent[activeMetric] = value;
                 renderStudents();
+                saveToLocalStorage();
             }
             closeKeypad();
         }
