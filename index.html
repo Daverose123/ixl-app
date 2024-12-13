@@ -185,24 +185,18 @@
         </div>
     </div>
     <script>
-        const GITHUB_API = 'https://api.github.com';
-        const TOKEN = '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';
-        const REPO_OWNER = 'Daverose123';
-        const REPO_NAME = 'Daverose123';
-        const FILE_PATH = 'data.txt';
-        const BRANCH = 'main';
+        const FILE_URL = 'https://raw.githubusercontent.com/Daverose123/ixl-app/main/data.txt';
 
         let students = [];
         let activeStudent = null;
         let activeMetric = null;
 
         async function fetchData() {
-            const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${FILE_PATH}`;
             try {
-                const response = await fetch(url);
+                const response = await fetch(FILE_URL);
                 if (!response.ok) throw new Error('Failed to fetch data.txt');
                 const text = await response.text();
-                students = text.split('\n').map(line => {
+                students = text.trim().split('\n').map(line => {
                     const [name, reading, language, quizzes] = line.split(',');
                     return { name, reading: +reading, language: +language, quizzes: +quizzes };
                 });
@@ -212,49 +206,13 @@
             }
         }
 
-        async function updateFile() {
-            const url = `${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-            const headers = {
-                Authorization: `Bearer ${TOKEN}`,
-                Accept: 'application/vnd.github.v3+json',
-            };
-
-            const updatedContent = btoa(students.map(student => `${student.name},${student.reading},${student.language},${student.quizzes}`).join('\n'));
-
-            try {
-                const response = await fetch(url, { headers });
-                const fileData = await response.json();
-                const sha = fileData.sha;
-
-                const body = {
-                    message: 'Updating data.txt dynamically',
-                    content: updatedContent,
-                    sha,
-                    branch: BRANCH,
-                };
-
-                const updateResponse = await fetch(url, {
-                    method: 'PUT',
-                    headers,
-                    body: JSON.stringify(body),
-                });
-
-                if (!updateResponse.ok) throw new Error('Failed to update file');
-                console.log('File updated successfully!');
-            } catch (error) {
-                console.error('Error updating file:', error);
-            }
-        }
-
         function renderStudents() {
             const studentGrid = document.getElementById('student-grid');
             studentGrid.innerHTML = '';
             students.forEach((student, index) => {
                 const card = document.createElement('div');
                 card.classList.add('student-card');
-                const imgPath = `images/${student.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
                 card.innerHTML = `
-                    <img src="${imgPath}" alt="${student.name}" onerror="this.src='images/default.jpg'">
                     <h3>${student.name}</h3>
                     <div class="progress-circle-container">
                         ${['reading', 'language', 'quizzes'].map(metric => `
@@ -299,7 +257,6 @@
             if (!isNaN(value)) {
                 activeStudent[activeMetric] = Math.min(value, activeMetric === 'quizzes' ? 20 : 100);
                 renderStudents();
-                updateFile();
             }
             closeKeypad();
         }
