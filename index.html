@@ -86,15 +86,13 @@
     <div class="grid-container" id="student-grid"></div>
     <script>
         const GITHUB_API = 'https://api.github.com';
-        const TOKEN = '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';
+        const TOKEN = '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';
         const REPO_OWNER = 'Daverose123';
         const REPO_NAME = 'ixl-app';
         const FILE_PATH = 'data.txt';
         const BRANCH = 'main';
 
         let students = [];
-        let activeStudent = null;
-        let activeMetric = null;
 
         async function fetchData() {
             const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${FILE_PATH}`;
@@ -161,7 +159,7 @@
                     <h3>${student.name}</h3>
                     <div class="progress-circle-container">
                         ${['reading', 'language', 'quizzes'].map(metric => `
-                            <div class="progress-circle" onclick="updateMetric(${index}, '${metric}')">
+                            <div class="progress-circle" onclick="editMetric(${index}, '${metric}')">
                                 <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
                                 <span class="value">${student[metric]}</span>
                             </div>
@@ -172,19 +170,12 @@
             });
         }
 
-        function updateMetric(index, metric) {
-            activeStudent = students[index];
-            activeMetric = metric;
-
-            const newValue = prompt(`Enter new value for ${metric} (${metric === 'quizzes' ? 'max 20' : 'max 100'}):`);
-            const value = parseInt(newValue, 10);
-
-            if (!isNaN(value) && value >= 0 && (metric === 'quizzes' ? value <= 20 : value <= 100)) {
-                activeStudent[metric] = value;
+        function editMetric(index, metric) {
+            const newValue = prompt(`Update ${metric} for ${students[index].name}`, students[index][metric]);
+            if (newValue !== null) {
+                students[index][metric] = Math.min(parseInt(newValue, 10), metric === 'quizzes' ? 20 : 100);
                 renderStudents();
                 updateFile();
-            } else {
-                alert('Invalid input. Please try again.');
             }
         }
 
