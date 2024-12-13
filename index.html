@@ -15,9 +15,35 @@
 
         h1 {
             margin: 20px;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #fbbd08, #f2711c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        .reset-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .reset-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .timer {
+            font-size: 1.2rem;
             color: #3b5998;
-            font-size: 2rem;
-            text-shadow: 1px 1px #ccc;
+            margin-bottom: 20px;
         }
 
         .grid-container {
@@ -58,25 +84,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            background-color: #e0e0e0;
-        }
-
-        .progress-circle[data-progress="low"] {
-            box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.7);
-        }
-
-        .progress-circle[data-progress="medium"] {
-            box-shadow: 0 0 15px 5px rgba(255, 255, 0, 0.7);
-        }
-
-        .progress-circle[data-progress="high"] {
-            box-shadow: 0 0 15px 5px rgba(0, 255, 0, 0.7);
-        }
-
-        .progress-circle[data-selected="true"] {
-            box-shadow: 0 0 20px 5px rgba(0, 0, 255, 0.8);
+            border: 2px solid transparent;
+            overflow: hidden;
         }
 
         .progress-circle .label {
@@ -92,6 +101,10 @@
             bottom: 25%;
             font-size: 0.9rem;
             font-weight: bold;
+        }
+
+        .progress-circle[data-selected="true"] {
+            border: 4px solid blue;
         }
 
         .keypad-overlay {
@@ -180,7 +193,9 @@
     </style>
 </head>
 <body>
-    <h1>IXL and Read Theory Progress Tracker</h1>
+    <button class="reset-btn" onclick="requestReset()">Reset All Data</button>
+    <h1>📅 IXL and Read Theory Progress Tracker 🎯</h1>
+    <div class="timer" id="countdown-timer">Tasks are due soon! ⏳</div>
     <div class="grid-container" id="student-grid"></div>
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
     <div class="keypad" id="keypad">
@@ -202,96 +217,28 @@
         </div>
     </div>
     <script>
-        const IMAGE_BASE_URL = 'https://raw.githubusercontent.com/Daverose123/ixl-app/main/images/';
-        const MAX_READING = 15, MAX_LANGUAGE = 15, MAX_QUIZZES = 20;
+        const DUE_DATE = new Date('2024-12-31'); // Adjust to your desired due date
+        const PIN_CODE = '4296';
 
-        let students = JSON.parse(localStorage.getItem('students')) || [
-            { name: "Charlene", reading: 7, language: 8, quizzes: 13 },
-            { name: "Mieke", reading: 12, language: 2, quizzes: 3 },
-            { name: "Asa", reading: 2, language: 9, quizzes: 0 },
-            // Add more students
-        ];
-
-        let activeStudent = null;
-        let activeMetric = null;
-
-        function saveToLocalStorage() {
-            localStorage.setItem('students', JSON.stringify(students));
-        }
-
-        function renderStudents() {
-            const studentGrid = document.getElementById('student-grid');
-            studentGrid.innerHTML = '';
-            students.forEach((student, index) => {
-                const card = document.createElement('div');
-                card.classList.add('student-card');
-                const imgPath = `${IMAGE_BASE_URL}${student.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
-                card.innerHTML = `
-                    <img src="${imgPath}" alt="${student.name}" onerror="this.src='${IMAGE_BASE_URL}default.jpg'">
-                    <h3>${student.name}</h3>
-                    <div class="progress-circle-container">
-                        ${['reading', 'language', 'quizzes'].map(metric => {
-                            const max = metric === 'reading' || metric === 'language' ? 15 : 20;
-                            const percent = Math.min((student[metric] / max) * 100, 100);
-                            const progress = percent < 50 ? 'low' : percent < 80 ? 'medium' : 'high';
-                            return `
-                                <div class="progress-circle" 
-                                     data-progress="${progress}" 
-                                     onclick="openKeypad(${index}, '${metric}', this)">
-                                    <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
-                                    <span class="value">${student[metric]}</span>
-                                </div>`;
-                        }).join('')}
-                    </div>
-                `;
-                studentGrid.appendChild(card);
-            });
-        }
-
-        function openKeypad(index, metric, element) {
-            activeStudent = students[index];
-            activeMetric = metric;
-            const keypad = document.getElementById('keypad');
-            const overlay = document.getElementById('keypad-overlay');
-            overlay.style.display = 'block';
-            keypad.style.display = 'block';
-            document.getElementById('keypad-display').textContent = '';
-
-            // Reset all progress-circle selection
-            document.querySelectorAll('.progress-circle').forEach(circle => {
-                circle.dataset.selected = "false";
-            });
-
-            // Highlight active circle
-            element.dataset.selected = "true";
-        }
-
-        function closeKeypad() {
-            document.getElementById('keypad').style.display = 'none';
-            document.getElementById('keypad-overlay').style.display = 'none';
-        }
-
-        function addKey(value) {
-            const display = document.getElementById('keypad-display');
-            display.textContent += value;
-        }
-
-        function clearKeypad() {
-            document.getElementById('keypad-display').textContent = '';
-        }
-
-        function saveKeypad() {
-            const display = document.getElementById('keypad-display');
-            const value = parseInt(display.textContent, 10);
-            if (!isNaN(value)) {
-                activeStudent[activeMetric] = value;
-                renderStudents();
-                saveToLocalStorage();
+        function requestReset() {
+            const pin = prompt('Enter PIN to reset all data:');
+            if (pin === PIN_CODE) {
+                localStorage.removeItem('students');
+                location.reload();
+            } else {
+                alert('Incorrect PIN. Reset denied.');
             }
-            closeKeypad();
         }
 
-        renderStudents();
+        function updateCountdown() {
+            const now = new Date();
+            const diff = DUE_DATE - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('countdown-timer').textContent = `🎉 ${days} days left to complete your tasks! 🕒`;
+        }
+
+        setInterval(updateCountdown, 1000 * 60); // Update every minute
+        updateCountdown();
     </script>
 </body>
 </html>
