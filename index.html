@@ -38,6 +38,13 @@
             text-align: center;
         }
 
+        .student-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
         .progress-circle-container {
             display: flex;
             justify-content: space-around;
@@ -178,7 +185,7 @@
         </div>
     </div>
     <script>
-        const API_URL = 'https://raw.githubusercontent.com/Daverose123/ixl-app/main/data.txt';
+        const STUDENT_DATA_URL = "https://raw.githubusercontent.com/Daverose123/ixl-app/main/data.txt";
 
         let students = [];
         let activeStudent = null;
@@ -186,34 +193,46 @@
 
         async function fetchData() {
             try {
-                const response = await fetch(API_URL);
-                if (!response.ok) throw new Error('Failed to fetch data');
+                const response = await fetch(STUDENT_DATA_URL);
+                if (!response.ok) throw new Error("Failed to fetch student data");
                 const text = await response.text();
-                students = text.split('\n').map(line => {
-                    const [name, reading, language, quizzes] = line.split(',');
-                    return { name, reading: +reading, language: +language, quizzes: +quizzes };
-                });
+                students = text
+                    .trim()
+                    .split("\n")
+                    .map((line) => {
+                        const [name, reading, language, quizzes] = line.split(",");
+                        return {
+                            name: name.trim(),
+                            reading: parseInt(reading, 10),
+                            language: parseInt(language, 10),
+                            quizzes: parseInt(quizzes, 10),
+                        };
+                    });
                 renderStudents();
             } catch (error) {
-                console.error(error.message);
+                console.error("Error fetching data:", error);
             }
         }
 
         function renderStudents() {
-            const studentGrid = document.getElementById('student-grid');
-            studentGrid.innerHTML = '';
+            const studentGrid = document.getElementById("student-grid");
+            studentGrid.innerHTML = "";
             students.forEach((student, index) => {
-                const card = document.createElement('div');
-                card.classList.add('student-card');
+                const card = document.createElement("div");
+                card.classList.add("student-card");
                 card.innerHTML = `
                     <h3>${student.name}</h3>
                     <div class="progress-circle-container">
-                        ${['reading', 'language', 'quizzes'].map(metric => `
+                        ${["reading", "language", "quizzes"]
+                            .map(
+                                (metric) => `
                             <div class="progress-circle" onclick="openKeypad(${index}, '${metric}')">
                                 <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
                                 <span class="value">${student[metric]}</span>
                             </div>
-                        `).join('')}
+                        `
+                            )
+                            .join("")}
                     </div>
                 `;
                 studentGrid.appendChild(card);
@@ -223,32 +242,30 @@
         function openKeypad(index, metric) {
             activeStudent = students[index];
             activeMetric = metric;
-            const keypad = document.getElementById('keypad');
-            const overlay = document.getElementById('keypad-overlay');
-            overlay.style.display = 'block';
-            keypad.style.display = 'block';
-            document.getElementById('keypad-display').textContent = '';
+            document.getElementById("keypad-overlay").style.display = "block";
+            document.getElementById("keypad").style.display = "block";
+            document.getElementById("keypad-display").textContent = "";
         }
 
         function closeKeypad() {
-            document.getElementById('keypad').style.display = 'none';
-            document.getElementById('keypad-overlay').style.display = 'none';
+            document.getElementById("keypad").style.display = "none";
+            document.getElementById("keypad-overlay").style.display = "none";
         }
 
         function addKey(value) {
-            const display = document.getElementById('keypad-display');
+            const display = document.getElementById("keypad-display");
             display.textContent += value;
         }
 
         function clearKeypad() {
-            document.getElementById('keypad-display').textContent = '';
+            document.getElementById("keypad-display").textContent = "";
         }
 
         function saveKeypad() {
-            const display = document.getElementById('keypad-display');
+            const display = document.getElementById("keypad-display");
             const value = parseInt(display.textContent, 10);
             if (!isNaN(value)) {
-                activeStudent[activeMetric] = Math.min(value, activeMetric === 'quizzes' ? 20 : 100);
+                activeStudent[activeMetric] = activeMetric === "quizzes" ? Math.min(value, 20) : Math.min(value, 100);
                 renderStudents();
             }
             closeKeypad();
