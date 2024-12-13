@@ -21,8 +21,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none; /* Allows clicks to pass through */
-            z-index: 0; /* Behind student card content */
+            pointer-events: none; 
+            z-index: 0; 
         }
 
         /* Header Styles */
@@ -269,61 +269,65 @@
             position: fixed;
             top: 50%;
             right: 20px;
-            width: 30px;
+            width: 50px;
             height: 300px;
             background-color: #e0e0e0;
             border-radius: 15px;
             transform: translateY(-50%);
             box-shadow: 0 0 5px rgba(0,0,0,0.3);
             z-index: 1000;
+            position: relative;
+        }
+
+        /* Label on Progress Bar */
+        #class-progress-bar::before {
+            content: "Class Progress 🌟";
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
         }
 
         #class-progress-fill {
+            position: absolute;
+            bottom: 0; /* Starts from the bottom */
             width: 100%;
-            height: 0%;
+            height: 0%; /* Will fill upwards as height increases */
             background: linear-gradient(135deg, #4caf50, #81c784);
             border-radius: 15px;
             transition: height 1s ease-in-out;
         }
-
-        /* Add any other styling you prefer for the page */
-
     </style>
 </head>
 <body>
-    <!-- Celebration Sound (Adjust src to your preferred sound file) -->
-    <audio id="confetti-sound" src="celebration-sound.mp3" preload="auto"></audio>
-
+    <!-- No audio or sound elements here -->
     <!-- Reset Button -->
     <button class="reset-btn" onclick="requestReset()">Reset All Data</button>
 
-    <!-- Header -->
     <h1>
         <span class="emoji">🎯</span> IXL and Read Theory Progress Tracker <span class="emoji">📊</span>
     </h1>
 
-    <!-- Countdown Container -->
     <div class="countdown-container">
         <span id="days-left"></span>
     </div>
 
-    <!-- Daily Quote Container -->
     <div class="quote-container">
         <span id="daily-quote"></span>
     </div>
 
-    <!-- Grid Container for Student Cards -->
     <div class="grid-container" id="student-grid"></div>
 
-    <!-- Class Progress Bar -->
     <div id="class-progress-bar">
         <div id="class-progress-fill"></div>
     </div>
 
-    <!-- Keypad Overlay -->
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
-
-    <!-- Keypad Modal -->
     <div id="keypad" class="keypad">
         <button class="close-button" onclick="closeKeypad()">✖</button>
         <div id="keypad-display" class="keypad-display"></div>
@@ -471,14 +475,8 @@
             }
         }
 
-        // Massive Confetti Celebration for Class
+        // Massive Confetti Celebration (no sound)
         function triggerMassiveConfetti() {
-            const confettiSound = document.getElementById('confetti-sound');
-            if (confettiSound) {
-                confettiSound.currentTime = 0;
-                confettiSound.play();
-            }
-
             const duration = 5000; // 5 seconds of confetti
             const end = Date.now() + duration;
             const colors = ['#bb0000', '#ffffff', '#00bb00', '#0000bb', '#ffbb00', '#00bbbb', '#bb00bb'];
@@ -516,7 +514,6 @@
             const progressFill = document.getElementById('class-progress-fill');
             progressFill.style.height = `${progressPercent}%`;
 
-            // If entire class is at 100%, trigger massive confetti
             if (progressPercent === 100) {
                 triggerMassiveConfetti();
             }
@@ -666,4 +663,5 @@
     </script>
 </body>
 </html>
+
 
