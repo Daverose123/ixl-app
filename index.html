@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
     <title>🎯 IXL and Read Theory Progress Tracker 📊</title>
     <style>
+        /* Existing CSS... */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -83,6 +84,8 @@
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
+            position: relative; /* Ensure stacking context */
+            z-index: 2; /* Ensure it's above fireworks */
         }
 
         .student-card img {
@@ -228,6 +231,9 @@
     </style>
 </head>
 <body>
+    <!-- Fireworks Container -->
+    <canvas id="fireworks-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;"></canvas>
+
     <button class="reset-btn" onclick="requestReset()">Reset All Data</button>
     <h1>
         <span class="emoji">🎯</span> IXL and Read Theory Progress Tracker <span class="emoji">📊</span>
@@ -258,6 +264,8 @@
             <div class="key confirm" onclick="saveKeypad()">✔</div>
         </div>
     </div>
+    <!-- Fireworks.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.0.0/dist/fireworks.min.js"></script>
     <script>
         const IMAGE_BASE_URL = 'https://raw.githubusercontent.com/Daverose123/ixl-app/main/images/';
         const MAX_READING = 15, MAX_LANGUAGE = 15, MAX_QUIZZES = 20;
@@ -337,6 +345,74 @@
             localStorage.setItem('students', JSON.stringify(students));
         }
 
+        // Initialize Fireworks
+        let fireworksInstance;
+
+        function initFireworks() {
+            const container = document.getElementById('fireworks-canvas');
+            fireworksInstance = new Fireworks(container, {
+                speed: 2,
+                acceleration: 1.05,
+                friction: 0.98,
+                gravity: 1.5,
+                particles: 50,
+                trace: 3,
+                explosion: 5,
+                autoresize: true,
+                brightness: { min: 50, max: 80 },
+                decay: { min: 0.015, max: 0.03 },
+                flickering: 50,
+                opacity: { min: 0, max: 1 },
+                angle: { min: 0, max: 360 },
+                spread: { min: 10, max: 360 },
+                sound: {
+                    enable: false,
+                },
+            });
+            fireworksInstance.start();
+        }
+
+        // Function to check if all progress circles are green
+        function checkAllGreen() {
+            for (let student of students) {
+                for (let metric of ['reading', 'language', 'quizzes']) {
+                    const max = metric === 'reading' || metric === 'language' ? 15 : 20;
+                    const value = student[metric];
+                    const percent = Math.min((value / max) * 100, 100);
+                    if (percent < 80) { // 'high' is >=80%
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Function to trigger fireworks if eligible
+        function triggerFireworksIfEligible() {
+            const allGreen = checkAllGreen();
+            if (!allGreen) return;
+
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const fireworksTriggeredMonth = localStorage.getItem('fireworksTriggeredMonth');
+
+            if (fireworksTriggeredMonth === String(currentMonth)) {
+                // Fireworks already triggered this month
+                return;
+            }
+
+            // Trigger fireworks
+            initFireworks();
+
+            // Mark fireworks as triggered for this month
+            localStorage.setItem('fireworksTriggeredMonth', String(currentMonth));
+
+            // Stop fireworks after 10 seconds
+            setTimeout(() => {
+                fireworksInstance.stop();
+            }, 10000);
+        }
+
         // Render students data
         function renderStudents() {
             const studentGrid = document.getElementById('student-grid');
@@ -365,6 +441,9 @@
                 `;
                 studentGrid.appendChild(card);
             });
+
+            // After rendering, check for fireworks
+            triggerFireworksIfEligible();
         }
 
         // Reset data manually with PIN
@@ -442,6 +521,9 @@
                 });
                 saveToLocalStorage();
                 localStorage.setItem('lastMonth', currentMonth);
+
+                // Also reset fireworks trigger
+                localStorage.removeItem('fireworksTriggeredMonth');
             }
         }
 
@@ -453,3 +535,4 @@
     </script>
 </body>
 </html>
+
