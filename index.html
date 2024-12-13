@@ -21,7 +21,6 @@
             text-shadow: 1px 1px #ccc;
         }
 
-        /* Grid container for student cards */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -31,7 +30,6 @@
             margin: 0 auto;
         }
 
-        /* Styling for student cards */
         .student-card {
             background: linear-gradient(135deg, #d9e6f2, #b2cce3);
             border-radius: 10px;
@@ -47,7 +45,6 @@
             margin-bottom: 10px;
         }
 
-        /* Progress circle container and individual circles */
         .progress-circle-container {
             display: flex;
             justify-content: space-around;
@@ -83,7 +80,6 @@
             font-weight: bold;
         }
 
-        /* Keypad styles */
         .keypad-overlay {
             position: fixed;
             top: 0;
@@ -189,18 +185,64 @@
         </div>
     </div>
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyaNwXPkERKK0etVwfRqUyLOJZXXea17dkFiorCYShjZO9k84xRInSR4x4-ElppxZM-Tw/exec';
+        const GITHUB_API = 'https://api.github.com';
+        const TOKEN = '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'; // Replace this with your actual token
+        const REPO_OWNER = 'Daverose123';
+        const REPO_NAME = 'Daverose123';
+        const FILE_PATH = 'data.txt';
+        const BRANCH = 'main';
+
         let students = [];
         let activeStudent = null;
         let activeMetric = null;
 
         async function fetchData() {
+            const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${FILE_PATH}`;
             try {
-                const response = await fetch(scriptURL);
-                students = await response.json();
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch data.txt');
+                const text = await response.text();
+                students = text.split('\n').map(line => {
+                    const [name, reading, language, quizzes] = line.split(',');
+                    return { name, reading: +reading, language: +language, quizzes: +quizzes };
+                });
                 renderStudents();
             } catch (error) {
                 console.error('Error fetching data:', error);
+            }
+        }
+
+        async function updateFile() {
+            const url = `${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+            const headers = {
+                Authorization: `Bearer ${TOKEN}`,
+                Accept: 'application/vnd.github.v3+json',
+            };
+
+            const updatedContent = btoa(students.map(student => `${student.name},${student.reading},${student.language},${student.quizzes}`).join('\n'));
+
+            try {
+                const response = await fetch(url, { headers });
+                const fileData = await response.json();
+                const sha = fileData.sha;
+
+                const body = {
+                    message: 'Updating data.txt dynamically',
+                    content: updatedContent,
+                    sha,
+                    branch: BRANCH,
+                };
+
+                const updateResponse = await fetch(url, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(body),
+                });
+
+                if (!updateResponse.ok) throw new Error('Failed to update file');
+                console.log('File updated successfully!');
+            } catch (error) {
+                console.error('Error updating file:', error);
             }
         }
 
@@ -217,74 +259,4 @@
                     <div class="progress-circle-container">
                         ${['reading', 'language', 'quizzes'].map(metric => `
                             <div class="progress-circle" onclick="openKeypad(${index}, '${metric}', this)">
-                                <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
-                                <span class="value">${metric === 'quizzes' ? `${student[metric]}/20` : `${student[metric]}%`}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                studentGrid.appendChild(card);
-            });
-        }
-
-        function openKeypad(index, metric, element) {
-            activeStudent = students[index];
-            activeMetric = metric;
-            const keypad = document.getElementById('keypad');
-            const overlay = document.getElementById('keypad-overlay');
-            overlay.style.display = 'block';
-            keypad.style.left = `calc(50% - ${keypad.offsetWidth / 2}px)`;
-            keypad.style.top = `calc(50% - ${keypad.offsetHeight / 2}px)`;
-            keypad.style.display = 'block';
-            document.getElementById('keypad-display').textContent = '';
-        }
-
-        function closeKeypad() {
-            document.getElementById('keypad').style.display = 'none';
-            document.getElementById('keypad-overlay').style.display = 'none';
-        }
-
-        function addKey(value) {
-            const display = document.getElementById('keypad-display');
-            display.textContent += value;
-        }
-
-        function clearKeypad() {
-            document.getElementById('keypad-display').textContent = '';
-        }
-
-        function saveKeypad() {
-            const display = document.getElementById('keypad-display');
-            const value = parseInt(display.textContent, 10);
-            if (!isNaN(value)) {
-                activeStudent[activeMetric] = activeMetric === 'quizzes' ? Math.min(value, 20) : Math.min(value, 100);
-                renderStudents();
-                updateGoogleSheets();
-            }
-            closeKeypad();
-        }
-
-        async function updateGoogleSheets() {
-            try {
-                const response = await fetch(scriptURL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ data: students }),
-                });
-
-                if (response.ok) {
-                    console.log('Data successfully updated in Google Sheets.');
-                } else {
-                    console.error('Failed to update Google Sheets. Status:', response.status);
-                }
-            } catch (error) {
-                console.error('Error updating Google Sheets:', error);
-            }
-        }
-
-        fetchData();
-    </script>
-</body>
-</html>
+                                <span class="label
