@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IXL and Read Theory Progress Tracker</title>
     <style>
+        /* General styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -78,65 +79,199 @@
             font-size: 0.9rem;
             font-weight: bold;
         }
+
+        .keypad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 5;
+        }
+
+        .keypad {
+            display: none;
+            position: fixed;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 20px;
+            width: 150px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .keypad .close-button {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .keypad .keypad-display {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+
+        .keypad .keypad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .keypad .key {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+            background: #3b5998;
+            color: white;
+            border-radius: 5px;
+            line-height: 40px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .keypad .key:hover {
+            background: #4267b2;
+        }
+
+        .keypad .clear {
+            background: #f44336;
+        }
+
+        .keypad .clear:hover {
+            background: #e53935;
+        }
+
+        .keypad .confirm {
+            background: #4caf50;
+        }
+
+        .keypad .confirm:hover {
+            background: #45a049;
+        }
     </style>
 </head>
 <body>
     <h1>IXL and Read Theory Progress Tracker</h1>
     <div class="grid-container" id="student-grid"></div>
-    
-    <!-- Keypad section - Always visible -->
-    <div id="keypad-overlay" style="display: block; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); z-index: 100;"></div>
-    <div id="keypad" style="display: block; position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); background: white; border: 2px solid black; padding: 20px; z-index: 200; text-align: center;">
-        <button onclick="closeKeypad()">✖</button>
-        <div id="keypad-display" style="margin-bottom: 10px; font-size: 1.5rem; font-weight: bold;">Test Display</div>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-            <button style="width: 50px; height: 50px;" onclick="console.log('1')">1</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('2')">2</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('3')">3</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('4')">4</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('5')">5</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('6')">6</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('7')">7</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('8')">8</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('9')">9</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('0')">0</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('Clear')">Clear</button>
-            <button style="width: 50px; height: 50px;" onclick="console.log('Confirm')">✔</button>
+    <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
+    <div class="keypad" id="keypad">
+        <button class="close-button" onclick="closeKeypad()">✖</button>
+        <div id="keypad-display" class="keypad-display"></div>
+        <div class="keypad-grid">
+            <div class="key" onclick="addKey('1')">1</div>
+            <div class="key" onclick="addKey('2')">2</div>
+            <div class="key" onclick="addKey('3')">3</div>
+            <div class="key" onclick="addKey('4')">4</div>
+            <div class="key" onclick="addKey('5')">5</div>
+            <div class="key" onclick="addKey('6')">6</div>
+            <div class="key" onclick="addKey('7')">7</div>
+            <div class="key" onclick="addKey('8')">8</div>
+            <div class="key" onclick="addKey('9')">9</div>
+            <div class="key clear" onclick="clearKeypad()">Clear</div>
+            <div class="key" onclick="addKey('0')">0</div>
+            <div class="key confirm" onclick="saveKeypad()">✔</div>
         </div>
     </div>
-
     <script>
-        let students = [];
+        const STUDENT_DATA_URL = "https://raw.githubusercontent.com/Daverose123/ixl-app/main/data.txt";
 
-        // Temporary function to render test data
-        function renderStudents() {
-            const studentGrid = document.getElementById('student-grid');
-            students = [
-                { name: "Student 1", reading: 10, language: 50, quizzes: 5 },
-                { name: "Student 2", reading: 20, language: 60, quizzes: 8 }
-            ];
-            studentGrid.innerHTML = students.map(student => `
-                <div class="student-card">
-                    <h3>${student.name}</h3>
-                    <div class="progress-circle-container">
-                        <div class="progress-circle"><span class="label">Reading</span><span class="value">${student.reading}</span></div>
-                        <div class="progress-circle"><span class="label">Language</span><span class="value">${student.language}</span></div>
-                        <div class="progress-circle"><span class="label">Quizzes</span><span class="value">${student.quizzes}</span></div>
-                    </div>
-                </div>
-            `).join('');
+        let students = [];
+        let activeStudent = null;
+        let activeMetric = null;
+
+        async function fetchData() {
+            try {
+                const response = await fetch(STUDENT_DATA_URL);
+                if (!response.ok) throw new Error("Failed to fetch student data");
+                const text = await response.text();
+                students = text
+                    .trim()
+                    .split("\n")
+                    .map((line) => {
+                        const [name, reading, language, quizzes] = line.split(",");
+                        return {
+                            name: name.trim(),
+                            reading: parseInt(reading, 10),
+                            language: parseInt(language, 10),
+                            quizzes: parseInt(quizzes, 10),
+                        };
+                    });
+                renderStudents();
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
         }
 
-        // Debugging keypad functions
-        function openKeypad() {
-            console.log("Open Keypad Triggered");
+        function renderStudents() {
+            const studentGrid = document.getElementById("student-grid");
+            studentGrid.innerHTML = "";
+            students.forEach((student, index) => {
+                const card = document.createElement("div");
+                card.classList.add("student-card");
+                card.innerHTML = `
+                    <h3>${student.name}</h3>
+                    <div class="progress-circle-container">
+                        ${["reading", "language", "quizzes"]
+                            .map(
+                                (metric) => `
+                            <div class="progress-circle" onclick="openKeypad(${index}, '${metric}')">
+                                <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
+                                <span class="value">${student[metric]}</span>
+                            </div>
+                        `
+                            )
+                            .join("")}
+                    </div>
+                `;
+                studentGrid.appendChild(card);
+            });
+        }
+
+        function openKeypad(index, metric) {
+            activeStudent = students[index];
+            activeMetric = metric;
+            document.getElementById("keypad-overlay").style.display = "block";
+            document.getElementById("keypad").style.display = "block";
+            document.getElementById("keypad-display").textContent = "";
         }
 
         function closeKeypad() {
-            console.log("Close Keypad Triggered");
+            document.getElementById("keypad").style.display = "none";
+            document.getElementById("keypad-overlay").style.display = "none";
         }
 
-        renderStudents();
+        function addKey(value) {
+            const display = document.getElementById("keypad-display");
+            display.textContent += value;
+        }
+
+        function clearKeypad() {
+            document.getElementById("keypad-display").textContent = "";
+        }
+
+        function saveKeypad() {
+            const display = document.getElementById("keypad-display");
+            const value = parseInt(display.textContent, 10);
+            if (!isNaN(value)) {
+                activeStudent[activeMetric] = activeMetric === "quizzes" ? Math.min(value, 20) : Math.min(value, 100);
+                renderStudents();
+            }
+            closeKeypad();
+        }
+
+        fetchData();
     </script>
 </body>
 </html>
