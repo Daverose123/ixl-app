@@ -85,65 +85,30 @@
     <h1>IXL and Read Theory Progress Tracker</h1>
     <div class="grid-container" id="student-grid"></div>
     <script>
-        const GITHUB_API = 'https://api.github.com';
-        const TOKEN = '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';
-        const REPO_OWNER = 'Daverose123';
-        const REPO_NAME = 'ixl-app';
-        const FILE_PATH = 'data.txt';
-        const BRANCH = 'main';
-
         let students = [];
+        let activeStudent = null;
+        let activeMetric = null;
 
-        async function fetchData() {
-            const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${FILE_PATH}`;
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Failed to fetch data.txt');
-                const text = await response.text();
-                students = text.split('\n').map(line => {
-                    const [name, reading, language, quizzes] = line.split(',');
-                    return { name, reading: +reading, language: +language, quizzes: +quizzes };
-                });
-                renderStudents();
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
+        function saveToLocalStorage() {
+            localStorage.setItem('students', JSON.stringify(students));
+            console.log('Data saved to LocalStorage!');
         }
 
-        async function updateFile() {
-            const url = `${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-            const headers = {
-                Authorization: `Bearer ${TOKEN}`,
-                Accept: 'application/vnd.github.v3+json',
-            };
-
-            const updatedContent = btoa(
-                students.map(student => `${student.name},${student.reading},${student.language},${student.quizzes}`).join('\n')
-            );
-
-            try {
-                const response = await fetch(url, { headers });
-                if (!response.ok) throw new Error(`Failed to fetch file: ${response.status}`);
-                const fileData = await response.json();
-                const sha = fileData.sha;
-
-                const body = {
-                    message: 'Updating data.txt dynamically',
-                    content: updatedContent,
-                    sha,
-                    branch: BRANCH,
-                };
-
-                const updateResponse = await fetch(url, {
-                    method: 'PUT',
-                    headers,
-                    body: JSON.stringify(body),
-                });
-
-                if (!updateResponse.ok) throw new Error('Failed to update file');
-                console.log('File updated successfully!');
-            } catch (error) {
-                console.error('Error updating file:', error);
+        function loadFromLocalStorage() {
+            const data = localStorage.getItem('students');
+            if (data) {
+                students = JSON.parse(data);
+                console.log('Data loaded from LocalStorage:', students);
+                renderStudents();
+            } else {
+                console.log('No data found in LocalStorage. Initializing with default values.');
+                students = [
+                    { name: 'Alice', reading: 70, language: 80, quizzes: 15 },
+                    { name: 'Bob', reading: 60, language: 90, quizzes: 18 },
+                    { name: 'Charlie', reading: 50, language: 70, quizzes: 10 },
+                ];
+                saveToLocalStorage();
+                renderStudents();
             }
         }
 
@@ -153,13 +118,11 @@
             students.forEach((student, index) => {
                 const card = document.createElement('div');
                 card.classList.add('student-card');
-                const imgPath = `images/${student.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
                 card.innerHTML = `
-                    <img src="${imgPath}" alt="${student.name}" onerror="this.src='images/default.jpg'">
                     <h3>${student.name}</h3>
                     <div class="progress-circle-container">
                         ${['reading', 'language', 'quizzes'].map(metric => `
-                            <div class="progress-circle" onclick="editMetric(${index}, '${metric}')">
+                            <div class="progress-circle" onclick="updateMetric(${index}, '${metric}')">
                                 <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
                                 <span class="value">${student[metric]}</span>
                             </div>
@@ -170,16 +133,17 @@
             });
         }
 
-        function editMetric(index, metric) {
-            const newValue = prompt(`Update ${metric} for ${students[index].name}`, students[index][metric]);
-            if (newValue !== null) {
-                students[index][metric] = Math.min(parseInt(newValue, 10), metric === 'quizzes' ? 20 : 100);
+        function updateMetric(index, metric) {
+            const newValue = prompt(`Enter new value for ${metric}:`, students[index][metric]);
+            if (newValue !== null && !isNaN(newValue)) {
+                students[index][metric] = metric === 'quizzes' ? Math.min(+newValue, 20) : Math.min(+newValue, 100);
                 renderStudents();
-                updateFile();
+                saveToLocalStorage();
             }
         }
 
-        fetchData();
+        // Load data from LocalStorage on page load
+        document.addEventListener('DOMContentLoaded', loadFromLocalStorage);
     </script>
 </body>
 </html>
