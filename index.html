@@ -207,6 +207,35 @@
         .keypad .confirm:hover {
             background: #45a049;
         }
+
+        #timer-container {
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #3b5998;
+        }
+
+        #countdown-timer {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #quote-container {
+            font-style: italic;
+            font-size: 1rem;
+            color: #4267b2;
+            animation: fadeIn 3s ease-in-out infinite;
+        }
+
+        /* Fade-in effect for quotes */
+        @keyframes fadeIn {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -214,6 +243,11 @@
     <h1>
         <span class="emoji">🎯</span> IXL and Read Theory Progress Tracker <span class="emoji">📊</span>
     </h1>
+
+    <div id="timer-container">
+        <div id="countdown-timer">⏳ 0 days left this month!</div>
+        <div id="quote-container">"You can do it!" 🌟</div>
+    </div>
     <div class="grid-container" id="student-grid"></div>
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
     <div id="keypad" class="keypad">
@@ -247,6 +281,38 @@
 
         let activeStudent = null;
         let activeMetric = null;
+
+        // Inspirational Quotes
+        const quotes = [
+            "Believe in yourself and all that you are! 💪",
+            "Mistakes are proof that you are trying. 🌱",
+            "Dream big, work hard, stay focused! 🎯",
+            "You are capable of amazing things! 🌟",
+            "Your only limit is your mind. 🧠",
+            "Never stop learning, because life never stops teaching. 📚",
+            "Small progress is still progress! 🏆",
+            "The secret to getting ahead is getting started. 🚀",
+            "Every day is a chance to be better! 🌈",
+            "Shoot for the moon. Even if you miss, you'll land among the stars. 🌌"
+        ];
+
+        // Timer and Quote Logic
+        function updateCountdownAndQuote() {
+            const now = new Date();
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Last day of current month
+            const timeDiff = endOfMonth - now;
+
+            const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            document.getElementById("countdown-timer").textContent = `⏳ ${daysLeft} day${daysLeft === 1 ? "" : "s"} left this month!`;
+
+            // Rotate Quotes
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById("quote-container").textContent = randomQuote;
+        }
+
+        // Update timer and quote every 5 seconds
+        setInterval(updateCountdownAndQuote, 5000);
+        updateCountdownAndQuote();
 
         function saveToLocalStorage() {
             localStorage.setItem('students', JSON.stringify(students));
