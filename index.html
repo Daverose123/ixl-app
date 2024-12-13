@@ -141,57 +141,44 @@
         }
 
         async function updateFile() {
-            const url = `${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-            const headers = {
-                Authorization: `Bearer ${TOKEN}`,
-                Accept: 'application/vnd.github.v3+json',
-            };
+    const url = `${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+    const headers = {
+        Authorization: `Bearer ${TOKEN}`,
+        Accept: 'application/vnd.github.v3+json',
+    };
 
-            const updatedContent = btoa(
-                students.map(student => `${student.name},${student.reading},${student.language},${student.quizzes}`).join('\n')
-            );
+    const updatedContent = btoa(
+        students.map(student => `${student.name},${student.reading},${student.language},${student.quizzes}`).join('\n')
+    );
 
-            try {
-                const response = await fetch(url, { headers });
-                const fileData = await response.json();
-                const sha = fileData.sha;
+    try {
+        // Fetch the current file information to get the SHA
+        const response = await fetch(url, { headers });
+        if (!response.ok) throw new Error(`Failed to fetch file: ${response.status}`);
+        const fileData = await response.json();
+        const sha = fileData.sha;
 
-                const body = {
-                    message: 'Update student data',
-                    content: updatedContent,
-                    sha,
-                    branch: BRANCH,
-                };
+        // Prepare the update payload
+        const body = {
+            message: 'Updating data.txt dynamically',
+            content: updatedContent,
+            sha: sha, // Required to update existing content
+            branch: BRANCH,
+        };
 
-                const updateResponse = await fetch(url, {
-                    method: 'PUT',
-                    headers,
-                    body: JSON.stringify(body),
-                });
+        // Update the file
+        const updateResponse = await fetch(url, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify(body),
+        });
 
-                if (!updateResponse.ok) throw new Error('Failed to update file');
-                console.log('File updated successfully!');
-            } catch (error) {
-                console.error('Error updating file:', error);
-            }
-        }
-
-        function renderStudents() {
-            const studentGrid = document.getElementById('student-grid');
-            studentGrid.innerHTML = '';
-            students.forEach((student, index) => {
-                studentGrid.innerHTML += `
-                    <div class="student-card" onclick="openKeypad(${index})">
-                        <h3>${student.name}</h3>
-                        <div class="progress-circle-container">
-                            <div class="progress-circle"><span class="label">Reading</span><span class="value">${student.reading}</span></div>
-                            <div class="progress-circle"><span class="label">Language</span><span class="value">${student.language}</span></div>
-                            <div class="progress-circle"><span class="label">Quizzes</span><span class="value">${student.quizzes}</span></div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
+        if (!updateResponse.ok) throw new Error('Failed to update file');
+        console.log('File updated successfully!');
+    } catch (error) {
+        console.error('Error updating file:', error.message);
+    }
+}
 
         function openKeypad(index) {
             activeStudent = students[index];
