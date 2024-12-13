@@ -21,19 +21,14 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-            display: inline-block;
             position: relative;
+            display: inline-block;
             padding: 10px 20px;
         }
 
-        h1::before {
-            content: "🎯";
-            margin-right: 10px;
-        }
-
-        h1::after {
-            content: "📊";
-            margin-left: 10px;
+        .emoji {
+            -webkit-background-clip: initial;
+            -webkit-text-fill-color: initial;
         }
 
         .reset-btn {
@@ -216,7 +211,9 @@
 </head>
 <body>
     <button class="reset-btn" onclick="requestReset()">Reset All Data</button>
-    <h1>IXL and Read Theory Progress Tracker</h1>
+    <h1>
+        <span class="emoji">🎯</span> IXL and Read Theory Progress Tracker <span class="emoji">📊</span>
+    </h1>
     <div class="grid-container" id="student-grid"></div>
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
     <div id="keypad" class="keypad">
