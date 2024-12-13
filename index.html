@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IXL and Read Theory Progress Tracker</title>
     <style>
-        /* General styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -36,13 +35,6 @@
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
-        }
-
-        .student-card img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: 10px;
         }
 
         .progress-circle-container {
@@ -82,8 +74,8 @@
         }
 
         .progress-circle.selected {
-            border-color: #4caf50;
-            box-shadow: 0 0 10px #4caf50;
+            border-color: #007bff;
+            box-shadow: 0 0 10px #007bff;
             transform: scale(1.1);
         }
 
@@ -121,17 +113,6 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-        }
-
-        .keypad .keypad-info {
-            margin-bottom: 10px;
-            font-size: 1rem;
-            color: #333;
-            text-align: center;
-        }
-
-        .keypad .keypad-info p {
-            margin: 5px 0;
         }
 
         .keypad .keypad-display {
@@ -187,12 +168,8 @@
     <h1>IXL and Read Theory Progress Tracker</h1>
     <div class="grid-container" id="student-grid"></div>
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
-    <div class="keypad" id="keypad">
+    <div id="keypad" class="keypad">
         <button class="close-button" onclick="closeKeypad()">✖</button>
-        <div class="keypad-info">
-            <p><strong>Student:</strong> <span id="selected-student"></span></p>
-            <p><strong>Metric:</strong> <span id="selected-metric"></span></p>
-        </div>
         <div id="keypad-display" class="keypad-display"></div>
         <div class="keypad-grid">
             <div class="key" onclick="addKey('1')">1</div>
@@ -210,7 +187,7 @@
         </div>
     </div>
     <script>
-        let students = [
+        let students = JSON.parse(localStorage.getItem('students')) || [
             { name: "John", reading: 50, language: 60, quizzes: 10 },
             { name: "Jane", reading: 70, language: 80, quizzes: 15 },
             { name: "Jim", reading: 40, language: 50, quizzes: 12 },
@@ -242,9 +219,6 @@
         function openKeypad(index, metric) {
             activeStudent = students[index];
             activeMetric = metric;
-
-            document.getElementById('selected-student').textContent = activeStudent.name;
-            document.getElementById('selected-metric').textContent = metric.charAt(0).toUpperCase() + metric.slice(1);
 
             document.querySelectorAll('.progress-circle').forEach(circle => circle.classList.remove('selected'));
             const circles = document.querySelectorAll('.progress-circle-container')[index].children;
@@ -281,6 +255,7 @@
             const value = parseInt(display.textContent, 10);
             if (!isNaN(value)) {
                 activeStudent[activeMetric] = Math.min(value, activeMetric === 'quizzes' ? 20 : 100);
+                localStorage.setItem('students', JSON.stringify(students));
                 renderStudents();
             }
             closeKeypad();
