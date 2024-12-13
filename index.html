@@ -79,14 +79,15 @@
             color: #555;
         }
 
-        /* 4 columns for student cards */
+        /* 6 columns for student cards */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 20px;
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
+            margin-top: 180px; /* Add top margin to account for fixed progress bar */
         }
 
         .student-card {
@@ -101,8 +102,8 @@
         }
 
         .student-card img {
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             margin-bottom: 10px;
         }
@@ -125,8 +126,8 @@
 
         .progress-circle {
             position: relative;
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -135,7 +136,7 @@
             cursor: pointer;
             background-color: #e0e0e0;
             transition: box-shadow 0.3s;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
         }
 
         .progress-circle[data-progress="low"] {
@@ -157,7 +158,7 @@
         .progress-circle .label {
             position: absolute;
             top: 25%;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             font-weight: bold;
             color: #333;
         }
@@ -165,7 +166,7 @@
         .progress-circle .value {
             position: absolute;
             bottom: 25%;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: bold;
         }
 
@@ -254,15 +255,20 @@
             background: #45a049;
         }
 
-        /* Progress Wrapper (with label above and bar below) */
+        /* Horizontal Progress Wrapper at top */
         #progress-wrapper {
             position: fixed;
             top: 80px;
-            right: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 1000;
             display: flex;
             flex-direction: column;
             align-items: center;
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
 
         #progress-label {
@@ -274,22 +280,22 @@
 
         #class-progress-bar {
             position: relative;
-            width: 50px;
-            height: 300px;
+            width: 300px;
+            height: 30px;
             background-color: #e0e0e0;
             border-radius: 15px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.3);
             overflow: hidden;
         }
 
         #class-progress-fill {
             position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 0%;
+            left: 0;
+            top: 0;
+            width: 0%;
+            height: 100%;
             background: linear-gradient(135deg, #4caf50, #81c784);
             border-radius: 15px;
-            transition: height 1s ease-in-out;
+            transition: width 1s ease-in-out;
         }
     </style>
 </head>
@@ -310,7 +316,7 @@
 
     <div class="grid-container" id="student-grid"></div>
 
-    <!-- Progress Wrapper with Label Above Bar -->
+    <!-- Progress Wrapper with Label Above Horizontal Bar -->
     <div id="progress-wrapper">
         <div id="progress-label">Class Progress 🌟</div>
         <div id="class-progress-bar">
@@ -394,7 +400,7 @@
             { id: 10, name: "Angelynn", reading: 0, language: 0, quizzes: 0 },
             { id: 11, name: "Olivia Ou", reading: 0, language: 0, quizzes: 0 },
             { id: 12, name: "Hilary", reading: 0, language: 0, quizzes: 0 },
-            { id: 13, name: "Olivia Lin", reading: 0, language: 0, quizzes: 0 }, 
+            { id: 13, name: "Olivia Lin", reading: 0, language: 0, quizzes: 0 },
             { id: 14, name: "Emily", reading: 0, language: 0, quizzes: 0 },
             { id: 15, name: "Weggis", reading: 0, language: 0, quizzes: 0 },
             { id: 16, name: "Gianna", reading: 0, language: 0, quizzes: 0 },
@@ -515,7 +521,7 @@
 
             const progressPercent = (completedMetrics / totalMetrics) * 100;
             const progressFill = document.getElementById('class-progress-fill');
-            progressFill.style.height = `${progressPercent}%`;
+            progressFill.style.width = `${progressPercent}%`;
 
             if (progressPercent === 100) {
                 triggerMassiveConfetti();
@@ -593,7 +599,7 @@
                 });
 
                 const progressFill = document.getElementById('class-progress-fill');
-                progressFill.style.height = '0%';
+                progressFill.style.width = '0%';
 
                 alert('All data has been reset for the new month!');
             } else {
@@ -661,7 +667,7 @@
                 });
 
                 const progressFill = document.getElementById('class-progress-fill');
-                progressFill.style.height = '0%';
+                progressFill.style.width = '0%';
 
                 console.log('Monthly reset completed.');
             }
