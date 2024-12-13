@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎯 IXL and Read Theory Progress Tracker 📊</title>
     <style>
+        /* General Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -13,6 +14,18 @@
             text-align: center;
         }
 
+        /* Confetti Canvas Styling */
+        .confetti-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to pass through */
+            z-index: 0; /* Behind student card content */
+        }
+
+        /* Header Styles */
         h1 {
             margin: 20px;
             font-size: 2.5rem;
@@ -31,6 +44,7 @@
             -webkit-text-fill-color: initial;
         }
 
+        /* Reset Button Styles */
         .reset-btn {
             position: absolute;
             top: 10px;
@@ -50,6 +64,7 @@
             background-color: #d32f2f;
         }
 
+        /* Countdown and Quote Containers */
         .countdown-container, .quote-container {
             margin: 10px auto 20px auto;
             padding: 10px;
@@ -68,23 +83,26 @@
             color: #555;
         }
 
+        /* Grid Container for Student Cards */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
         }
 
+        /* Student Card Styles */
         .student-card {
             background: linear-gradient(135deg, #d9e6f2, #b2cce3);
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
-            position: relative; /* Ensure stacking context */
-            z-index: 2; /* Ensure it's above confetti */
+            position: relative; /* To position confetti canvas absolutely within */
+            z-index: 2; /* Above confetti canvas */
+            overflow: hidden; /* To clip confetti within the card */
         }
 
         .student-card img {
@@ -94,12 +112,14 @@
             margin-bottom: 10px;
         }
 
+        /* Progress Circle Container */
         .progress-circle-container {
             display: flex;
             justify-content: space-around;
             margin: 20px 0;
         }
 
+        /* Progress Circle Styles */
         .progress-circle {
             position: relative;
             width: 80px;
@@ -111,6 +131,7 @@
             box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             background-color: #e0e0e0;
+            transition: box-shadow 0.3s;
         }
 
         .progress-circle[data-progress="low"] {
@@ -144,6 +165,7 @@
             font-weight: bold;
         }
 
+        /* Keypad Overlay Styles */
         .keypad-overlay {
             position: fixed;
             top: 0;
@@ -155,6 +177,7 @@
             z-index: 5;
         }
 
+        /* Keypad Modal Styles */
         .keypad {
             display: none;
             position: fixed;
@@ -206,6 +229,7 @@
             text-align: center;
             cursor: pointer;
             user-select: none;
+            transition: background 0.3s;
         }
 
         .keypad .key:hover {
@@ -230,18 +254,34 @@
     </style>
 </head>
 <body>
+    <!-- Confetti Canvas (Optional Global Confetti) -->
+    <!-- <canvas id="confetti-canvas"></canvas> -->
+
+    <!-- Reset Button -->
     <button class="reset-btn" onclick="requestReset()">Reset All Data</button>
+
+    <!-- Header -->
     <h1>
         <span class="emoji">🎯</span> IXL and Read Theory Progress Tracker <span class="emoji">📊</span>
     </h1>
+
+    <!-- Countdown Container -->
     <div class="countdown-container">
         <span id="days-left"></span>
     </div>
+
+    <!-- Daily Quote Container -->
     <div class="quote-container">
         <span id="daily-quote"></span>
     </div>
+
+    <!-- Grid Container for Student Cards -->
     <div class="grid-container" id="student-grid"></div>
+
+    <!-- Keypad Overlay -->
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
+
+    <!-- Keypad Modal -->
     <div id="keypad" class="keypad">
         <button class="close-button" onclick="closeKeypad()">✖</button>
         <div id="keypad-display" class="keypad-display"></div>
@@ -260,16 +300,24 @@
             <div class="key confirm" onclick="saveKeypad()">✔</div>
         </div>
     </div>
+
     <!-- Canvas Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script>
-        // Existing JavaScript Code with Confetti Implementation
 
+    <!-- Custom JavaScript -->
+    <script>
+        // Base URL for Images
         const IMAGE_BASE_URL = 'https://raw.githubusercontent.com/Daverose123/ixl-app/main/images/';
-        const MAX_READING = 15, MAX_LANGUAGE = 15, MAX_QUIZZES = 20;
+
+        // Maximum Values for Metrics
+        const MAX_READING = 15;
+        const MAX_LANGUAGE = 15;
+        const MAX_QUIZZES = 20;
+
+        // PIN Code for Reset
         const PIN_CODE = '4296';
 
-        // Motivational quotes for G3 kids (30 quotes)
+        // Motivational Quotes for G3 Kids (30 Quotes)
         const QUOTES = [
             "Believe in yourself, you’ve got this! 🌟",
             "Every mistake is a chance to learn something new. 📚",
@@ -303,16 +351,21 @@
             "Be kind, work hard, stay humble. 💕"
         ];
 
+        // Initialize Students Data from localStorage or Default
         let students = JSON.parse(localStorage.getItem('students')) || [
-            { name: "Charlene", reading: 7, language: 8, quizzes: 13 },
-            { name: "Mieke", reading: 12, language: 2, quizzes: 3 },
-            { name: "Asa", reading: 2, language: 9, quizzes: 0 },
+            { id: 1, name: "Charlene", reading: 7, language: 8, quizzes: 13 },
+            { id: 2, name: "Mieke", reading: 12, language: 2, quizzes: 3 },
+            { id: 3, name: "Asa", reading: 2, language: 9, quizzes: 0 },
         ];
 
+        // Active Student and Metric for Keypad
         let activeStudent = null;
         let activeMetric = null;
 
-        // Function to calculate days left in the month
+        /**
+         * Calculate Days Left in the Current Month
+         * @returns {number} Days left
+         */
         function calculateDaysLeft() {
             const now = new Date();
             const year = now.getFullYear();
@@ -323,74 +376,72 @@
             return daysLeft;
         }
 
-        // Display days left in the month
+        /**
+         * Display Days Left in the Month
+         */
         function displayDaysLeft() {
             const daysLeft = calculateDaysLeft();
             const daysLeftElem = document.getElementById('days-left');
             daysLeftElem.textContent = `📅 Only ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left this month! Keep going! 🎉`;
         }
 
-        // Show daily quote
+        /**
+         * Show Daily Motivational Quote
+         */
         function showDailyQuote() {
             const today = new Date();
             const dayOfMonth = today.getDate();
-            const quoteIndex = (dayOfMonth - 1) % QUOTES.length; 
+            const quoteIndex = (dayOfMonth - 1) % QUOTES.length;
             document.getElementById('daily-quote').textContent = QUOTES[quoteIndex];
         }
 
-        // Save to local storage
+        /**
+         * Save Students Data to localStorage
+         */
         function saveToLocalStorage() {
             localStorage.setItem('students', JSON.stringify(students));
         }
 
-        // Function to check if all progress circles are green
-        function checkAllGreen() {
-            for (let student of students) {
-                for (let metric of ['reading', 'language', 'quizzes']) {
-                    const max = metric === 'reading' || metric === 'language' ? 15 : 20;
-                    const value = student[metric];
-                    const percent = Math.min((value / max) * 100, 100);
-                    if (percent < 80) { // 'high' is >=80%
-                        return false;
-                    }
-                }
-            }
-            return true;
+        /**
+         * Check if a Specific Student has Completed All Metrics to 100%
+         * @param {Object} student - Student object
+         * @returns {boolean} - True if complete, else false
+         */
+        function isStudentComplete(student) {
+            const readingPercent = Math.min((student.reading / MAX_READING) * 100, 100);
+            const languagePercent = Math.min((student.language / MAX_LANGUAGE) * 100, 100);
+            const quizzesPercent = Math.min((student.quizzes / MAX_QUIZZES) * 100, 100);
+            console.log(`${student.name} - Reading: ${readingPercent}%, Language: ${languagePercent}%, Quizzes: ${quizzesPercent}%`);
+            return (readingPercent === 100 && languagePercent === 100 && quizzesPercent === 100);
         }
 
-        // Function to trigger confetti if eligible
-        function triggerConfettiIfEligible() {
-            const allGreen = checkAllGreen();
-            if (!allGreen) return;
-
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const confettiTriggeredMonth = localStorage.getItem('confettiTriggeredMonth');
-
-            if (confettiTriggeredMonth === String(currentMonth)) {
-                // Confetti already triggered this month
+        /**
+         * Trigger Confetti for a Specific Student
+         * @param {number} studentId - Unique ID of the student
+         */
+        function triggerConfettiForStudent(studentId) {
+            const canvas = document.getElementById(`confetti-${studentId}`);
+            if (!canvas) {
+                console.error(`Confetti canvas for student ID ${studentId} not found.`);
                 return;
             }
 
-            // Trigger confetti
-            launchConfetti();
+            // Initialize Confetti on the Student's Canvas
+            const myConfetti = confetti.create(canvas, {
+                resize: true,
+                useWorker: true
+            });
 
-            // Mark confetti as triggered for this month
-            localStorage.setItem('confettiTriggeredMonth', String(currentMonth));
-        }
-
-        // Function to launch confetti
-        function launchConfetti() {
-            // Basic confetti
-            confetti({
+            // Launch Confetti
+            myConfetti({
                 particleCount: 100,
                 spread: 70,
                 origin: { y: 0.6 }
             });
 
-            // Optional: Additional bursts
+            // Optional: Additional Burst for Effect
             setTimeout(() => {
-                confetti({
+                myConfetti({
                     particleCount: 100,
                     spread: 70,
                     origin: { y: 0.6 }
@@ -398,22 +449,52 @@
             }, 1000);
         }
 
-        // Render students data
+        /**
+         * Check and Trigger Confetti for Each Student
+         */
+        function checkAndTriggerConfetti() {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+
+            students.forEach(student => {
+                if (isStudentComplete(student)) {
+                    const confettiKey = `confettiTriggered-${student.id}-${currentMonth}`;
+                    const hasTriggered = localStorage.getItem(confettiKey);
+
+                    if (!hasTriggered) {
+                        console.log(`Triggering confetti for ${student.name}`);
+                        triggerConfettiForStudent(student.id);
+                        localStorage.setItem(confettiKey, 'true');
+                    } else {
+                        console.log(`Confetti already triggered for ${student.name} this month.`);
+                    }
+                }
+            });
+        }
+
+        /**
+         * Render Student Cards
+         */
         function renderStudents() {
             const studentGrid = document.getElementById('student-grid');
             studentGrid.innerHTML = '';
             students.forEach((student, index) => {
                 const card = document.createElement('div');
                 card.classList.add('student-card');
+                card.id = `student-${student.id}`;
                 const imgPath = `${IMAGE_BASE_URL}${student.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
                 card.innerHTML = `
+                    <!-- Confetti Canvas for this Student -->
+                    <canvas id="confetti-${student.id}" class="confetti-canvas"></canvas>
+                    
                     <img src="${imgPath}" alt="${student.name}" onerror="this.src='${IMAGE_BASE_URL}default.jpg'">
                     <h3>${student.name}</h3>
                     <div class="progress-circle-container">
                         ${['reading', 'language', 'quizzes'].map(metric => {
-                            const max = metric === 'reading' || metric === 'language' ? 15 : 20;
-                            const percent = Math.min((student[metric] / max) * 100, 100);
-                            const progress = percent < 50 ? 'low' : percent < 80 ? 'medium' : 'high';
+                            const max = metric === 'reading' || metric === 'language' ? MAX_READING : MAX_QUIZZES;
+                            const value = student[metric];
+                            const percent = Math.min((value / max) * 100, 100);
+                            const progress = percent === 100 ? 'high' : percent < 50 ? 'low' : 'medium';
                             return `
                                 <div class="progress-circle" 
                                      data-progress="${progress}" 
@@ -427,11 +508,13 @@
                 studentGrid.appendChild(card);
             });
 
-            // After rendering, check for confetti
-            triggerConfettiIfEligible();
+            // After rendering all students, check and trigger confetti
+            checkAndTriggerConfetti();
         }
 
-        // Reset data manually with PIN
+        /**
+         * Request Reset of All Data with PIN Authentication
+         */
         function requestReset() {
             const pin = prompt('Enter PIN to reset all data:');
             if (pin === PIN_CODE) {
@@ -448,7 +531,12 @@
             }
         }
 
-        // Open keypad for editing values
+        /**
+         * Open Keypad for Editing a Specific Metric
+         * @param {number} index - Index of the student in the students array
+         * @param {string} metric - Metric to be edited ('reading', 'language', 'quizzes')
+         * @param {HTMLElement} element - The clicked progress circle element
+         */
         function openKeypad(index, metric, element) {
             activeStudent = students[index];
             activeMetric = metric;
@@ -467,32 +555,47 @@
             element.dataset.selected = "true";
         }
 
+        /**
+         * Close the Keypad Modal
+         */
         function closeKeypad() {
             document.getElementById('keypad').style.display = 'none';
             document.getElementById('keypad-overlay').style.display = 'none';
         }
 
+        /**
+         * Add a Key Pressed on the Keypad
+         * @param {string} value - The value of the key pressed
+         */
         function addKey(value) {
             const display = document.getElementById('keypad-display');
             display.textContent += value;
         }
 
+        /**
+         * Clear the Keypad Display
+         */
         function clearKeypad() {
             document.getElementById('keypad-display').textContent = '';
         }
 
+        /**
+         * Save the Value Entered in the Keypad to the Active Metric
+         */
         function saveKeypad() {
             const display = document.getElementById('keypad-display');
             const value = parseInt(display.textContent, 10);
             if (!isNaN(value)) {
                 activeStudent[activeMetric] = value;
-                renderStudents();
                 saveToLocalStorage();
+                renderStudents();
             }
             closeKeypad();
         }
 
-        // Automatic monthly reset
+        /**
+         * Automatic Monthly Reset of All Data
+         */
         function monthlyResetCheck() {
             const now = new Date();
             const currentMonth = now.getMonth();
@@ -507,12 +610,16 @@
                 saveToLocalStorage();
                 localStorage.setItem('lastMonth', currentMonth);
 
-                // Also reset confetti trigger
-                localStorage.removeItem('confettiTriggeredMonth');
+                // Also reset confetti triggers for all students
+                students.forEach(student => {
+                    const confettiKey = `confettiTriggered-${student.id}-${currentMonth}`;
+                    localStorage.removeItem(confettiKey);
+                });
+                console.log('Monthly reset completed.');
             }
         }
 
-        // Initial setup
+        // Initial Setup
         monthlyResetCheck();
         renderStudents();
         displayDaysLeft();
@@ -520,3 +627,4 @@
     </script>
 </body>
 </html>
+
