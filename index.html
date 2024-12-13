@@ -58,6 +58,7 @@
             cursor: pointer;
             z-index: 1000;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
         }
 
         .reset-btn:hover {
@@ -110,6 +111,17 @@
             height: 80px;
             border-radius: 50%;
             margin-bottom: 10px;
+        }
+
+        /* Student Name Styles with Medal Emojis */
+        .student-name.completed::before {
+            content: "🏅 "; /* Medal emoji before the name */
+            font-size: 1.5rem;
+        }
+
+        .student-name.completed::after {
+            content: " 🏅"; /* Medal emoji after the name */
+            font-size: 1.5rem;
         }
 
         /* Progress Circle Container */
@@ -254,9 +266,6 @@
     </style>
 </head>
 <body>
-    <!-- Confetti Canvas (Optional Global Confetti) -->
-    <!-- <canvas id="confetti-canvas"></canvas> -->
-
     <!-- Reset Button -->
     <button class="reset-btn" onclick="requestReset()">Reset All Data</button>
 
@@ -450,24 +459,37 @@
         }
 
         /**
+         * Trigger Confetti and Add Completed Class for a Specific Student
+         * @param {Object} student - Student object
+         */
+        function celebrateStudentCompletion(student) {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const confettiKey = `confettiTriggered-${student.id}-${currentMonth}`;
+            const hasTriggered = localStorage.getItem(confettiKey);
+
+            if (!hasTriggered) {
+                console.log(`Celebrating completion for ${student.name}`);
+                triggerConfettiForStudent(student.id);
+                localStorage.setItem(confettiKey, 'true');
+
+                // Add the 'completed' class to the student's name
+                const studentNameElem = document.querySelector(`#student-${student.id} .student-name`);
+                if (studentNameElem) {
+                    studentNameElem.classList.add('completed');
+                }
+            } else {
+                console.log(`Confetti already triggered for ${student.name} this month.`);
+            }
+        }
+
+        /**
          * Check and Trigger Confetti for Each Student
          */
         function checkAndTriggerConfetti() {
-            const now = new Date();
-            const currentMonth = now.getMonth();
-
             students.forEach(student => {
                 if (isStudentComplete(student)) {
-                    const confettiKey = `confettiTriggered-${student.id}-${currentMonth}`;
-                    const hasTriggered = localStorage.getItem(confettiKey);
-
-                    if (!hasTriggered) {
-                        console.log(`Triggering confetti for ${student.name}`);
-                        triggerConfettiForStudent(student.id);
-                        localStorage.setItem(confettiKey, 'true');
-                    } else {
-                        console.log(`Confetti already triggered for ${student.name} this month.`);
-                    }
+                    celebrateStudentCompletion(student);
                 }
             });
         }
@@ -488,7 +510,7 @@
                     <canvas id="confetti-${student.id}" class="confetti-canvas"></canvas>
                     
                     <img src="${imgPath}" alt="${student.name}" onerror="this.src='${IMAGE_BASE_URL}default.jpg'">
-                    <h3>${student.name}</h3>
+                    <h3 class="student-name">${student.name}</h3>
                     <div class="progress-circle-container">
                         ${['reading', 'language', 'quizzes'].map(metric => {
                             const max = metric === 'reading' || metric === 'language' ? MAX_READING : MAX_QUIZZES;
@@ -518,6 +540,9 @@
         function requestReset() {
             const pin = prompt('Enter PIN to reset all data:');
             if (pin === PIN_CODE) {
+                const now = new Date();
+                const currentMonth = now.getMonth();
+
                 students.forEach(student => {
                     student.reading = 0;
                     student.language = 0;
@@ -525,6 +550,13 @@
                 });
                 saveToLocalStorage();
                 renderStudents();
+
+                // Reset confetti triggers for all students
+                students.forEach(student => {
+                    const confettiKey = `confettiTriggered-${student.id}-${currentMonth}`;
+                    localStorage.removeItem(confettiKey);
+                });
+
                 alert('All data has been reset for the new month!');
             } else {
                 alert('Incorrect PIN. Reset denied.');
@@ -627,4 +659,3 @@
     </script>
 </body>
 </html>
-
