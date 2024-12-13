@@ -92,11 +92,10 @@
     <h1>IXL and Read Theory Progress Tracker</h1>
     <div class="grid-container" id="student-grid"></div>
 
-    <!-- Keypad overlay and keypad -->
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
     <div id="keypad" class="keypad">
         <button onclick="closeKeypad()">✖</button>
-        <div id="keypad-display" style="margin-bottom: 10px; font-size: 1.5rem; font-weight: bold;">Test Display</div>
+        <div id="keypad-display" style="margin-bottom: 10px; font-size: 1.5rem; font-weight: bold;">Edit Value</div>
         <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
             <button onclick="addKey('1')">1</button>
             <button onclick="addKey('2')">2</button>
@@ -114,30 +113,92 @@
     </div>
 
     <script>
+        const GITHUB_API = 'https://api.github.com';
+        const TOKEN = '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';
+        const REPO_OWNER = 'Daverose123';
+        const REPO_NAME = 'ixl-app';
+        const FILE_PATH = 'data.txt';
+        const BRANCH = 'main';
+
         let students = [];
+        let activeStudent = null;
+        let activeMetric = null;
+
+        async function fetchData() {
+            const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/${FILE_PATH}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch data.txt');
+                const text = await response.text();
+                students = text.split('\n').map(line => {
+                    const [name, reading, language, quizzes] = line.split(',');
+                    return { name, reading: +reading, language: +language, quizzes: +quizzes };
+                });
+                renderStudents();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        async function updateFile() {
+            const url = `${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+            const headers = {
+                Authorization: `Bearer ${TOKEN}`,
+                Accept: 'application/vnd.github.v3+json',
+            };
+
+            const updatedContent = btoa(
+                students.map(student => `${student.name},${student.reading},${student.language},${student.quizzes}`).join('\n')
+            );
+
+            try {
+                const response = await fetch(url, { headers });
+                const fileData = await response.json();
+                const sha = fileData.sha;
+
+                const body = {
+                    message: 'Update student data',
+                    content: updatedContent,
+                    sha,
+                    branch: BRANCH,
+                };
+
+                const updateResponse = await fetch(url, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(body),
+                });
+
+                if (!updateResponse.ok) throw new Error('Failed to update file');
+                console.log('File updated successfully!');
+            } catch (error) {
+                console.error('Error updating file:', error);
+            }
+        }
 
         function renderStudents() {
             const studentGrid = document.getElementById('student-grid');
-            students = [
-                { name: "Student 1", reading: 10, language: 50, quizzes: 5 },
-                { name: "Student 2", reading: 20, language: 60, quizzes: 8 }
-            ];
-            studentGrid.innerHTML = students.map((student, index) => `
-                <div class="student-card" onclick="openKeypad(${index})">
-                    <h3>${student.name}</h3>
-                    <div class="progress-circle-container">
-                        <div class="progress-circle"><span class="label">Reading</span><span class="value">${student.reading}</span></div>
-                        <div class="progress-circle"><span class="label">Language</span><span class="value">${student.language}</span></div>
-                        <div class="progress-circle"><span class="label">Quizzes</span><span class="value">${student.quizzes}</span></div>
+            studentGrid.innerHTML = '';
+            students.forEach((student, index) => {
+                studentGrid.innerHTML += `
+                    <div class="student-card" onclick="openKeypad(${index})">
+                        <h3>${student.name}</h3>
+                        <div class="progress-circle-container">
+                            <div class="progress-circle"><span class="label">Reading</span><span class="value">${student.reading}</span></div>
+                            <div class="progress-circle"><span class="label">Language</span><span class="value">${student.language}</span></div>
+                            <div class="progress-circle"><span class="label">Quizzes</span><span class="value">${student.quizzes}</span></div>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            });
         }
 
         function openKeypad(index) {
+            activeStudent = students[index];
+            activeMetric = 'reading'; // Default metric for testing
             const keypad = document.getElementById('keypad');
             const overlay = document.getElementById('keypad-overlay');
-            document.getElementById('keypad-display').textContent = `Editing ${students[index].name}`;
+            document.getElementById('keypad-display').textContent = `Editing ${activeStudent.name}'s ${activeMetric}`;
             keypad.style.display = 'block';
             overlay.style.display = 'block';
         }
@@ -157,11 +218,17 @@
         }
 
         function confirmKeypad() {
-            console.log("Confirm clicked");
+            const display = document.getElementById('keypad-display');
+            const newValue = parseInt(display.textContent.replace(/\D/g, ''), 10); // Extract number
+            if (!isNaN(newValue)) {
+                activeStudent[activeMetric] = newValue;
+                renderStudents();
+                updateFile();
+            }
             closeKeypad();
         }
 
-        renderStudents();
+        fetchData();
     </script>
 </body>
 </html>
