@@ -15,17 +15,15 @@
 
         h1 {
             margin: 20px;
-            font-size: 2.5rem;
-            background: linear-gradient(to right, #fbbd08, #f2711c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: bold;
+            color: #3b5998;
+            font-size: 2rem;
+            text-shadow: 1px 1px #ccc;
         }
 
         .reset-btn {
             position: absolute;
             top: 10px;
-            left: 10px;
+            right: 10px;
             padding: 10px 20px;
             font-size: 0.9rem;
             background-color: #f44336;
@@ -33,17 +31,11 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            display: none;
+            z-index: 1000;
         }
 
         .reset-btn:hover {
             background-color: #d32f2f;
-        }
-
-        .timer {
-            font-size: 1.2rem;
-            color: #3b5998;
-            margin-bottom: 20px;
         }
 
         .grid-container {
@@ -84,8 +76,25 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 2px solid transparent;
-            overflow: hidden;
+            box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            background-color: #e0e0e0;
+        }
+
+        .progress-circle[data-progress="low"] {
+            box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.7);
+        }
+
+        .progress-circle[data-progress="medium"] {
+            box-shadow: 0 0 15px 5px rgba(255, 255, 0, 0.7);
+        }
+
+        .progress-circle[data-progress="high"] {
+            box-shadow: 0 0 15px 5px rgba(0, 255, 0, 0.7);
+        }
+
+        .progress-circle[data-selected="true"] {
+            box-shadow: 0 0 20px 5px rgba(0, 0, 255, 0.8);
         }
 
         .progress-circle .label {
@@ -102,123 +111,58 @@
             font-size: 0.9rem;
             font-weight: bold;
         }
-
-        .progress-circle[data-selected="true"] {
-            border: 4px solid blue;
-        }
-
-        .keypad-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
-            display: none;
-            z-index: 5;
-        }
-
-        .keypad {
-            display: none;
-            position: fixed;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 10px;
-            padding: 20px;
-            width: 200px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 10;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .keypad .close-button {
-            position: absolute;
-            top: 5px;
-            right: 10px;
-            background: transparent;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .keypad .keypad-display {
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #333;
-            text-align: center;
-        }
-
-        .keypad .keypad-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .keypad .key {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            font-size: 1rem;
-            background: #3b5998;
-            color: white;
-            border-radius: 5px;
-            line-height: 40px;
-            text-align: center;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .keypad .key:hover {
-            background: #4267b2;
-        }
-
-        .keypad .clear {
-            background: #f44336;
-        }
-
-        .keypad .clear:hover {
-            background: #e53935;
-        }
-
-        .keypad .confirm {
-            background: #4caf50;
-        }
-
-        .keypad .confirm:hover {
-            background: #45a049;
-        }
     </style>
 </head>
 <body>
     <button class="reset-btn" onclick="requestReset()">Reset All Data</button>
-    <h1>📅 IXL and Read Theory Progress Tracker 🎯</h1>
-    <div class="timer" id="countdown-timer">Tasks are due soon! ⏳</div>
+    <h1>IXL and Read Theory Progress Tracker</h1>
     <div class="grid-container" id="student-grid"></div>
-    <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
-    <div class="keypad" id="keypad">
-        <button class="close-button" onclick="closeKeypad()">✖</button>
-        <div id="keypad-display" class="keypad-display"></div>
-        <div class="keypad-grid">
-            <div class="key" onclick="addKey('1')">1</div>
-            <div class="key" onclick="addKey('2')">2</div>
-            <div class="key" onclick="addKey('3')">3</div>
-            <div class="key" onclick="addKey('4')">4</div>
-            <div class="key" onclick="addKey('5')">5</div>
-            <div class="key" onclick="addKey('6')">6</div>
-            <div class="key" onclick="addKey('7')">7</div>
-            <div class="key" onclick="addKey('8')">8</div>
-            <div class="key" onclick="addKey('9')">9</div>
-            <div class="key clear" onclick="clearKeypad()">Clear</div>
-            <div class="key" onclick="addKey('0')">0</div>
-            <div class="key confirm" onclick="saveKeypad()">✔</div>
-        </div>
-    </div>
+
     <script>
-        const DUE_DATE = new Date('2024-12-31'); // Adjust to your desired due date
+        const IMAGE_BASE_URL = 'https://raw.githubusercontent.com/Daverose123/ixl-app/main/images/';
+        const MAX_READING = 15, MAX_LANGUAGE = 15, MAX_QUIZZES = 20;
         const PIN_CODE = '4296';
+
+        let students = JSON.parse(localStorage.getItem('students')) || [
+            { name: "Charlene", reading: 7, language: 8, quizzes: 13 },
+            { name: "Mieke", reading: 12, language: 2, quizzes: 3 },
+            { name: "Asa", reading: 2, language: 9, quizzes: 0 },
+        ];
+
+        let activeStudent = null;
+        let activeMetric = null;
+
+        function saveToLocalStorage() {
+            localStorage.setItem('students', JSON.stringify(students));
+        }
+
+        function renderStudents() {
+            const studentGrid = document.getElementById('student-grid');
+            studentGrid.innerHTML = '';
+            students.forEach((student, index) => {
+                const card = document.createElement('div');
+                card.classList.add('student-card');
+                const imgPath = `${IMAGE_BASE_URL}${student.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
+                card.innerHTML = `
+                    <img src="${imgPath}" alt="${student.name}" onerror="this.src='${IMAGE_BASE_URL}default.jpg'">
+                    <h3>${student.name}</h3>
+                    <div class="progress-circle-container">
+                        ${['reading', 'language', 'quizzes'].map(metric => {
+                            const max = metric === 'reading' || metric === 'language' ? 15 : 20;
+                            const percent = Math.min((student[metric] / max) * 100, 100);
+                            const progress = percent < 50 ? 'low' : percent < 80 ? 'medium' : 'high';
+                            return `
+                                <div class="progress-circle" 
+                                     data-progress="${progress}">
+                                    <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
+                                    <span class="value">${student[metric]}</span>
+                                </div>`;
+                        }).join('')}
+                    </div>
+                `;
+                studentGrid.appendChild(card);
+            });
+        }
 
         function requestReset() {
             const pin = prompt('Enter PIN to reset all data:');
@@ -230,15 +174,7 @@
             }
         }
 
-        function updateCountdown() {
-            const now = new Date();
-            const diff = DUE_DATE - now;
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById('countdown-timer').textContent = `🎉 ${days} days left to complete your tasks! 🕒`;
-        }
-
-        setInterval(updateCountdown, 1000 * 60); // Update every minute
-        updateCountdown();
+        renderStudents();
     </script>
 </body>
 </html>
