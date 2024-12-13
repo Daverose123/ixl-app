@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IXL and Read Theory Progress Tracker</title>
     <style>
+        /* General styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -37,6 +38,13 @@
             text-align: center;
         }
 
+        .student-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+
         .progress-circle-container {
             display: flex;
             justify-content: space-around;
@@ -57,6 +65,21 @@
             border: 6px solid transparent;
         }
 
+        .progress-circle .label {
+            position: absolute;
+            top: 25%;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .progress-circle .value {
+            position: absolute;
+            bottom: 25%;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
         .keypad-overlay {
             position: fixed;
             top: 0;
@@ -71,47 +94,96 @@
         .keypad {
             display: none;
             position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            border: 2px solid black;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
             padding: 20px;
-            z-index: 200;
+            width: 150px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .keypad .close-button {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .keypad .keypad-display {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
             text-align: center;
         }
 
-        .keypad button {
-            width: 50px;
-            height: 50px;
-            margin: 5px;
+        .keypad .keypad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .keypad .key {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+            background: #3b5998;
+            color: white;
+            border-radius: 5px;
+            line-height: 40px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .keypad .key:hover {
+            background: #4267b2;
+        }
+
+        .keypad .clear {
+            background: #f44336;
+        }
+
+        .keypad .clear:hover {
+            background: #e53935;
+        }
+
+        .keypad .confirm {
+            background: #4caf50;
+        }
+
+        .keypad .confirm:hover {
+            background: #45a049;
         }
     </style>
 </head>
 <body>
     <h1>IXL and Read Theory Progress Tracker</h1>
     <div class="grid-container" id="student-grid"></div>
-
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
-    <div id="keypad" class="keypad">
-        <button onclick="closeKeypad()">✖</button>
-        <div id="keypad-display" style="margin-bottom: 10px; font-size: 1.5rem; font-weight: bold;">Edit Value</div>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-            <button onclick="addKey('1')">1</button>
-            <button onclick="addKey('2')">2</button>
-            <button onclick="addKey('3')">3</button>
-            <button onclick="addKey('4')">4</button>
-            <button onclick="addKey('5')">5</button>
-            <button onclick="addKey('6')">6</button>
-            <button onclick="addKey('7')">7</button>
-            <button onclick="addKey('8')">8</button>
-            <button onclick="addKey('9')">9</button>
-            <button onclick="clearKeypad()">Clear</button>
-            <button onclick="addKey('0')">0</button>
-            <button onclick="confirmKeypad()">✔</button>
+    <div class="keypad" id="keypad">
+        <button class="close-button" onclick="closeKeypad()">✖</button>
+        <div id="keypad-display" class="keypad-display"></div>
+        <div class="keypad-grid">
+            <div class="key" onclick="addKey('1')">1</div>
+            <div class="key" onclick="addKey('2')">2</div>
+            <div class="key" onclick="addKey('3')">3</div>
+            <div class="key" onclick="addKey('4')">4</div>
+            <div class="key" onclick="addKey('5')">5</div>
+            <div class="key" onclick="addKey('6')">6</div>
+            <div class="key" onclick="addKey('7')">7</div>
+            <div class="key" onclick="addKey('8')">8</div>
+            <div class="key" onclick="addKey('9')">9</div>
+            <div class="key clear" onclick="clearKeypad()">Clear</div>
+            <div class="key" onclick="addKey('0')">0</div>
+            <div class="key confirm" onclick="saveKeypad()">✔</div>
         </div>
     </div>
-
     <script>
         const GITHUB_API = 'https://api.github.com';
         const TOKEN = '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';
@@ -141,53 +213,73 @@
         }
 
         async function updateFile() {
-    const url = `${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-    const headers = {
-        Authorization: `Bearer ${TOKEN}`,
-        Accept: 'application/vnd.github.v3+json',
-    };
+            const url = `${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+            const headers = {
+                Authorization: `Bearer ${TOKEN}`,
+                Accept: 'application/vnd.github.v3+json',
+            };
 
-    const updatedContent = btoa(
-        students.map(student => `${student.name},${student.reading},${student.language},${student.quizzes}`).join('\n')
-    );
+            const updatedContent = btoa(
+                students.map(student => `${student.name},${student.reading},${student.language},${student.quizzes}`).join('\n')
+            );
 
-    try {
-        // Fetch the current file information to get the SHA
-        const response = await fetch(url, { headers });
-        if (!response.ok) throw new Error(`Failed to fetch file: ${response.status}`);
-        const fileData = await response.json();
-        const sha = fileData.sha;
+            try {
+                const response = await fetch(url, { headers });
+                if (!response.ok) throw new Error(`Failed to fetch file: ${response.status}`);
+                const fileData = await response.json();
+                const sha = fileData.sha;
 
-        // Prepare the update payload
-        const body = {
-            message: 'Updating data.txt dynamically',
-            content: updatedContent,
-            sha: sha, // Required to update existing content
-            branch: BRANCH,
-        };
+                const body = {
+                    message: 'Updating data.txt dynamically',
+                    content: updatedContent,
+                    sha,
+                    branch: BRANCH,
+                };
 
-        // Update the file
-        const updateResponse = await fetch(url, {
-            method: 'PUT',
-            headers,
-            body: JSON.stringify(body),
-        });
+                const updateResponse = await fetch(url, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(body),
+                });
 
-        if (!updateResponse.ok) throw new Error('Failed to update file');
-        console.log('File updated successfully!');
-    } catch (error) {
-        console.error('Error updating file:', error.message);
-    }
-}
+                if (!updateResponse.ok) throw new Error('Failed to update file');
+                console.log('File updated successfully!');
+            } catch (error) {
+                console.error('Error updating file:', error);
+            }
+        }
 
-        function openKeypad(index) {
+        function renderStudents() {
+            const studentGrid = document.getElementById('student-grid');
+            studentGrid.innerHTML = '';
+            students.forEach((student, index) => {
+                const card = document.createElement('div');
+                card.classList.add('student-card');
+                const imgPath = `images/${student.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
+                card.innerHTML = `
+                    <img src="${imgPath}" alt="${student.name}" onerror="this.src='images/default.jpg'">
+                    <h3>${student.name}</h3>
+                    <div class="progress-circle-container">
+                        ${['reading', 'language', 'quizzes'].map(metric => `
+                            <div class="progress-circle" onclick="openKeypad(${index}, '${metric}')">
+                                <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
+                                <span class="value">${student[metric]}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                studentGrid.appendChild(card);
+            });
+        }
+
+        function openKeypad(index, metric) {
             activeStudent = students[index];
-            activeMetric = 'reading'; // Default metric for testing
+            activeMetric = metric;
             const keypad = document.getElementById('keypad');
             const overlay = document.getElementById('keypad-overlay');
-            document.getElementById('keypad-display').textContent = `Editing ${activeStudent.name}'s ${activeMetric}`;
-            keypad.style.display = 'block';
             overlay.style.display = 'block';
+            keypad.style.display = 'block';
+            document.getElementById('keypad-display').textContent = '';
         }
 
         function closeKeypad() {
@@ -204,11 +296,11 @@
             document.getElementById('keypad-display').textContent = '';
         }
 
-        function confirmKeypad() {
+        function saveKeypad() {
             const display = document.getElementById('keypad-display');
-            const newValue = parseInt(display.textContent.replace(/\D/g, ''), 10); // Extract number
-            if (!isNaN(newValue)) {
-                activeStudent[activeMetric] = newValue;
+            const value = parseInt(display.textContent, 10);
+            if (!isNaN(value)) {
+                activeStudent[activeMetric] = Math.min(value, activeMetric === 'quizzes' ? 20 : 100);
                 renderStudents();
                 updateFile();
             }
