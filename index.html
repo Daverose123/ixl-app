@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IXL and Read Theory Progress Tracker</title>
     <style>
+        /* General styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -54,6 +55,7 @@
             align-items: center;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
             cursor: pointer;
+            border: 6px solid transparent;
         }
 
         .progress-circle .label {
@@ -85,8 +87,7 @@
         .keypad {
             display: none;
             position: fixed;
-            background: #ffffff; /* Ensure visible */
-            border: 2px solid #3b5998;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 10px;
             padding: 20px;
             width: 150px;
@@ -130,6 +131,7 @@
             line-height: 40px;
             text-align: center;
             cursor: pointer;
+            user-select: none;
         }
 
         .keypad .key:hover {
@@ -176,23 +178,81 @@
         </div>
     </div>
     <script>
-        // JavaScript code from above
-        const FILE_URL = 'https://raw.githubusercontent.com/Daverose123/ixl-app/main/data.txt';
+        const API_URL = 'https://raw.githubusercontent.com/Daverose123/ixl-app/main/data.txt';
+
         let students = [];
         let activeStudent = null;
         let activeMetric = null;
 
         async function fetchData() {
-            const response = await fetch(FILE_URL);
-            const text = await response.text();
-            students = text.trim().split('\n').map(line => {
-                const [name, reading, language, quizzes] = line.split(',');
-                return { name, reading: +reading, language: +language, quizzes: +quizzes };
-            });
-            renderStudents();
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Failed to fetch data');
+                const text = await response.text();
+                students = text.split('\n').map(line => {
+                    const [name, reading, language, quizzes] = line.split(',');
+                    return { name, reading: +reading, language: +language, quizzes: +quizzes };
+                });
+                renderStudents();
+            } catch (error) {
+                console.error(error.message);
+            }
         }
 
-        // Use the above JavaScript functions.
+        function renderStudents() {
+            const studentGrid = document.getElementById('student-grid');
+            studentGrid.innerHTML = '';
+            students.forEach((student, index) => {
+                const card = document.createElement('div');
+                card.classList.add('student-card');
+                card.innerHTML = `
+                    <h3>${student.name}</h3>
+                    <div class="progress-circle-container">
+                        ${['reading', 'language', 'quizzes'].map(metric => `
+                            <div class="progress-circle" onclick="openKeypad(${index}, '${metric}')">
+                                <span class="label">${metric.charAt(0).toUpperCase() + metric.slice(1)}</span>
+                                <span class="value">${student[metric]}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                studentGrid.appendChild(card);
+            });
+        }
+
+        function openKeypad(index, metric) {
+            activeStudent = students[index];
+            activeMetric = metric;
+            const keypad = document.getElementById('keypad');
+            const overlay = document.getElementById('keypad-overlay');
+            overlay.style.display = 'block';
+            keypad.style.display = 'block';
+            document.getElementById('keypad-display').textContent = '';
+        }
+
+        function closeKeypad() {
+            document.getElementById('keypad').style.display = 'none';
+            document.getElementById('keypad-overlay').style.display = 'none';
+        }
+
+        function addKey(value) {
+            const display = document.getElementById('keypad-display');
+            display.textContent += value;
+        }
+
+        function clearKeypad() {
+            document.getElementById('keypad-display').textContent = '';
+        }
+
+        function saveKeypad() {
+            const display = document.getElementById('keypad-display');
+            const value = parseInt(display.textContent, 10);
+            if (!isNaN(value)) {
+                activeStudent[activeMetric] = Math.min(value, activeMetric === 'quizzes' ? 20 : 100);
+                renderStudents();
+            }
+            closeKeypad();
+        }
 
         fetchData();
     </script>
