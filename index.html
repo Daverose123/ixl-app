@@ -14,12 +14,13 @@
         /* General Styles */
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #e0f7fa; /* Light cyan for underwater feel */
+            background: linear-gradient(to bottom, #e0f7fa, #b2ebf2); /* Subtle underwater gradient */
             margin: 0;
             padding: 0;
             text-align: center;
             box-sizing: border-box;
             color: #01579b; /* Dark blue for text */
+            overflow-x: hidden;
         }
 
         /* Startup Modal Styles */
@@ -34,6 +35,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            animation: fadeIn 0.6s ease-in-out;
         }
 
         .modal {
@@ -44,7 +46,7 @@
             width: 90%;
             max-width: 500px;
             text-align: center;
-            animation: fadeIn 0.6s ease-in-out;
+            position: relative;
         }
 
         .modal h2 {
@@ -72,11 +74,12 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .modal button:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
         }
 
         /* Animations */
@@ -87,7 +90,7 @@
 
         /* Navigation Bar Styles */
         .navbar {
-            background-color: #0288d1; /* Blue */
+            background: linear-gradient(90deg, #0288d1, #01579b); /* Modern blue gradient */
             padding: 15px 0;
             position: sticky;
             top: 0;
@@ -97,41 +100,38 @@
             align-items: center;
             gap: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background 0.5s;
         }
 
         .navbar button {
-            background: none;
-            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
             color: white;
             font-size: 1rem;
             cursor: pointer;
-            transition: background 0.3s, border 0.3s;
+            transition: background 0.3s, transform 0.3s;
             padding: 10px 20px;
             border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             position: relative;
         }
 
         .navbar button.active, .navbar button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            border: 2px solid #ffffff;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
         }
 
         /* Reset Button Styles */
         .navbar .reset-button {
-            background: none;
-            border: 2px solid transparent;
-            color: #ffeb3b; /* Yellow for visibility */
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.3s, border 0.3s;
-            padding: 10px 20px;
-            border-radius: 25px;
+            background: #ffeb3b; /* Yellow for visibility */
+            color: #01579b; /* Dark blue text */
+            font-weight: bold;
         }
 
         .navbar .reset-button:hover {
-            background-color: rgba(255, 235, 59, 0.2);
-            border: 2px solid #ffeb3b;
-            color: #ffffff;
+            background: #fdd835; /* Darker yellow on hover */
         }
 
         /* Countdown and Quote Styles */
@@ -154,10 +154,35 @@
             font-style: italic;
             font-size: 1.1rem;
             color: #0277bd; /* Slightly darker blue */
-            padding: 15px 20px;
-            background-color: #b3e5fc; /* Light blue background */
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            background: linear-gradient(135deg, #b3e5fc, #81d4fa); /* Soft gradient */
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 1s ease-in-out;
+        }
+
+        .quote-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 20%, transparent 80%);
+            transform: rotate(45deg);
+            animation: rotateBackground 10s linear infinite;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes rotateBackground {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         /* Progress and Homework Section Styles */
@@ -166,9 +191,10 @@
             padding: 25px;
             max-width: 1200px;
             text-align: center;
-            background-color: #e1f5fe; /* Very light blue */
+            background-color: rgba(225, 245, 254, 0.9); /* Very light blue with transparency */
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            animation: fadeIn 1s ease-in-out;
         }
 
         .progress-section h2, .homework-section h2 {
@@ -260,6 +286,7 @@
             position: relative;
             transition: border 0.3s ease;
             cursor: pointer;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
         }
 
         .student-avatar:hover {
@@ -401,6 +428,7 @@
             background: rgba(0, 0, 0, 0.5);
             display: none;
             z-index: 500;
+            transition: opacity 0.3s ease;
         }
 
         .keypad {
@@ -416,6 +444,7 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
+            animation: fadeIn 0.5s ease-in-out;
         }
 
         .keypad .close-button {
@@ -493,6 +522,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1500;
+            animation: fadeIn 0.6s ease-in-out;
         }
 
         .reset-modal {
@@ -503,7 +533,7 @@
             width: 90%;
             max-width: 400px;
             text-align: center;
-            animation: fadeIn 0.6s ease-in-out;
+            position: relative;
         }
 
         .reset-modal h3 {
@@ -537,11 +567,12 @@
             border-radius: 30px;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .reset-modal button:hover {
             transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
         }
 
         /* Responsive Design */
@@ -694,13 +725,14 @@
     </div>
 
     <!-- Reset Modal -->
-    <div class="reset-modal-overlay" id="reset-modal-overlay" onclick="closeResetModal()"></div>
-    <div class="reset-modal" onclick="event.stopPropagation()">
-        <h3>🔒 Enter PIN to Reset Data</h3>
-        <input type="password" id="reset-pin" placeholder="Enter PIN" maxlength="4" aria-label="Reset PIN">
-        <div>
-            <button onclick="confirmReset()" aria-label="Confirm Reset">Reset</button>
-            <button onclick="closeResetModal()" aria-label="Cancel Reset">Cancel</button>
+    <div class="reset-modal-overlay" id="reset-modal-overlay" onclick="closeResetModal()">
+        <div class="reset-modal" onclick="event.stopPropagation()">
+            <h3>🔒 Enter PIN to Reset Data</h3>
+            <input type="password" id="reset-pin" placeholder="Enter PIN" maxlength="4" aria-label="Reset PIN">
+            <div>
+                <button onclick="confirmReset()" aria-label="Confirm Reset">Reset</button>
+                <button onclick="closeResetModal()" aria-label="Cancel Reset">Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -773,6 +805,7 @@
         // Flags to prevent multiple alerts and confetti
         let homeworkAlertShown = false;
         let progressAlertShown = false;
+        let studentConfettiTriggered = {}; // Object to track per student confetti
 
         // Initialize Application
         window.onload = function() {
@@ -831,7 +864,7 @@
         }
 
         // Confetti for Student Completion
-        function triggerStudentConfetti() {
+        function triggerStudentConfetti(student) {
             confetti({
                 particleCount: 100,
                 spread: 70,
@@ -841,10 +874,11 @@
 
         // Celebrate Student Completion
         function celebrateStudentCompletion(student) {
-            if (isStudentComplete(student)) {
+            if (isStudentComplete(student) && !studentConfettiTriggered[student.id]) {
+                triggerStudentConfetti(student);
+                studentConfettiTriggered[student.id] = true;
                 const studentNameElem = document.querySelector(`#progress-card-${student.id} .student-name`);
                 if (studentNameElem && !studentNameElem.classList.contains('completed')) {
-                    triggerStudentConfetti();
                     studentNameElem.classList.add('completed');
                 }
             }
@@ -1011,7 +1045,7 @@
             } else if (option === 'progress') {
                 toggleSection('progress');
             }
-            // Removed 'both' option as per Bug Fix
+            // Removed 'Use Both' option as per Bug Fix
             // Close the modal
             closeStartupModal();
         }
@@ -1143,6 +1177,7 @@
                 // Reset alert flags
                 homeworkAlertShown = false;
                 progressAlertShown = false;
+                studentConfettiTriggered = {};
 
                 // Close the reset modal
                 closeResetModal();
