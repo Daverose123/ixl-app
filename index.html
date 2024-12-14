@@ -81,8 +81,7 @@
         }
 
         .modal-buttons button {
-            width: 80%;
-            max-width: 200px;
+            width: 200px; /* Fixed width for uniformity */
             background: linear-gradient(45deg, #0288d1, #01579b); /* Blue gradient */
             border: none;
             color: white;
@@ -95,6 +94,9 @@
             align-items: center;
             gap: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            text-align: center;
+            height: 50px; /* Fixed height for uniformity */
+            justify-content: center;
         }
 
         .modal-buttons button:hover {
@@ -126,7 +128,7 @@
 
         /* Navigation Bar Styles */
         .navbar {
-            background: linear-gradient(90deg, #0288d1, #01579b); /* Modern blue gradient */
+            background: rgba(255, 255, 255, 0.8); /* Semi-transparent white for minimalistic look */
             padding: 15px 0;
             position: sticky;
             top: 0;
@@ -136,16 +138,15 @@
             align-items: center;
             gap: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: background 0.5s;
         }
 
         .navbar button {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0); /* Transparent background */
             border: none;
-            color: white;
+            color: #01579b; /* Dark blue text */
             font-size: 1rem;
             cursor: pointer;
-            transition: background 0.3s, transform 0.3s;
+            transition: color 0.3s, transform 0.3s;
             padding: 10px 20px;
             border-radius: 25px;
             display: flex;
@@ -155,7 +156,7 @@
         }
 
         .navbar button.active, .navbar button:hover {
-            background: rgba(255, 255, 255, 0.4);
+            color: #0288d1; /* Blue on hover/active */
             transform: scale(1.05);
         }
 
@@ -164,6 +165,7 @@
             background: #ffeb3b; /* Yellow for visibility */
             color: #01579b; /* Dark blue text */
             font-weight: bold;
+            border-radius: 25px;
         }
 
         .navbar .reset-button:hover {
@@ -186,21 +188,27 @@
             color: #0288d1; /* Blue */
         }
 
+        /* Quote Section Redesign */
         .quote-container {
             font-style: italic;
             font-size: 1.1rem;
             color: #0277bd; /* Slightly darker blue */
             padding: 20px;
-            background: linear-gradient(135deg, #b3e5fc, #81d4fa); /* Soft gradient */
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            /* Removed background and box-shadow for minimalistic look */
             position: relative;
             overflow: hidden;
-            /* Removed animation properties for the Quotes box */
-            opacity: 1;
-            transform: none;
-            transition: none;
-            animation: none;
+            /* Added label */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .quote-container::before {
+            content: "📜 Quote of the Day";
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #01579b; /* Dark blue */
         }
 
         /* Progress and Homework Section Styles */
@@ -285,6 +293,19 @@
             flex-direction: column;
             align-items: center;
             margin: 20px;
+            /* Arrange circles in reverse triangle */
+            display: grid;
+            grid-template-areas: 
+                "reading language"
+                "quizzes quizzes";
+            grid-gap: 20px;
+            justify-content: center;
+        }
+
+        .progress-circle-container.reverse-triangle {
+            grid-template-areas: 
+                "reading language"
+                "quizzes quizzes";
         }
 
         /* Student Card Styles */
@@ -382,7 +403,7 @@
         .progress-circle:hover,
         .progress-circle:focus {
             transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
         }
 
         .progress-ring__background {
@@ -425,7 +446,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 1.2rem;
-            font-weight: 700;
+            font-weight: bold;
             color: #01579b; /* Dark blue */
         }
 
@@ -440,7 +461,7 @@
 
         /* Homework Section Styles */
         .homework-section {
-            display: none; /* Hidden by default */
+            display: block; /* Visible by default */
         }
 
         .homework-section.active {
@@ -449,7 +470,7 @@
 
         /* Progress Tracker Section Styles */
         .progress-section {
-            display: none; /* Hidden by default */
+            display: block; /* Visible by default */
         }
 
         .progress-section.active {
@@ -838,6 +859,70 @@
             transform: scale(1.1);
             box-shadow: 0 0 10px rgba(0,0,0,0.2);
         }
+
+        /* Adjust Progress Circles Layout */
+        .progress-circle-container.reverse-triangle {
+            display: grid;
+            grid-template-areas: 
+                "reading language"
+                "quizzes quizzes";
+            grid-gap: 20px;
+            justify-content: center;
+        }
+
+        .progress-circle[data-metric="reading"] {
+            grid-area: reading;
+        }
+
+        .progress-circle[data-metric="language"] {
+            grid-area: language;
+        }
+
+        .progress-circle[data-metric="quizzes"] {
+            grid-area: quizzes;
+        }
+
+        /* Minimalistic Menu Bar */
+        .navbar {
+            background: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Ensure Buttons in Navbar Match Main Page */
+        .navbar button {
+            background: none; /* Remove background */
+            border: none;
+            color: #01579b; /* Dark blue text */
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.3s, transform 0.3s;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .navbar button.active, .navbar button:hover {
+            color: #0288d1; /* Blue on hover/active */
+            transform: scale(1.05);
+        }
+
+        /* Ensure Modal Buttons are Same Size */
+        .modal-buttons button {
+            width: 200px; /* Fixed width */
+            height: 50px; /* Fixed height */
+        }
+
     </style>
 </head>
 <body>
@@ -863,7 +948,7 @@
         <button id="nav-homework" onclick="toggleSection('homework')" class="active">📝 Homework</button>
         <button id="nav-progress" onclick="toggleSection('progress')">📈 Progress</button>
         <button class="reset-button" onclick="openResetModal()" aria-label="Reset Data">🔄 Reset Data</button>
-        <!-- Replaced Narwhal Logo Image with Emoji -->
+        <!-- Whale Emoji as Logo -->
         <span class="emoji-logo" role="img" aria-label="Narwhal Logo">🐋</span>
     </div>
 
@@ -1034,6 +1119,10 @@
                 modal.style.display = 'flex';
             }
 
+            // Add Event Listener to Whale Emoji for Game Modal
+            const emojiLogo = document.querySelector('.emoji-logo');
+            emojiLogo.addEventListener('click', openJellyfishGame);
+
             // Render Sections
             renderHomework();
             renderProgress();
@@ -1179,7 +1268,7 @@
                 card.id = `progress-card-${student.id}`;
 
                 card.innerHTML = `
-                    <img src="${getAvatarURL(student.name)}" alt="${student.name}" onerror="this.src='default-avatar.png'" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                    <img src="${getAvatarURL(student.name)}" alt="${student.name}" onerror="this.style.display='none';" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
                     <h3 class="student-name">${student.name}</h3>
                     <div class="progress-circle-container reverse-triangle">
                         <div class="progress-circle" onclick="openKeypad(${student.id}, 'reading', this)" data-selected="false" data-metric="reading" tabindex="0" role="button" aria-label="Reading progress: ${student.reading} out of ${MAX_READING}">
@@ -1488,8 +1577,6 @@
             const modal = modalOverlay.querySelector('.celebration-modal');
             modal.querySelector('h3').textContent = message;
             modalOverlay.style.display = 'flex';
-
-            // Removed confetti trigger from celebration modal for reset function
 
             // Automatically hide after 5 seconds
             setTimeout(() => {
