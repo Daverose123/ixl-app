@@ -1213,32 +1213,6 @@
             toggleSection('progress');
         });
 
-        // Handle Option Selection from Modal
-        function selectOption(option) {
-            if (option === 'homework') {
-                toggleSection('homework');
-            } else if (option === 'progress') {
-                toggleSection('progress');
-            } else if (option === 'both') {
-                // Show both sections
-                document.getElementById('homework-section').classList.add('active');
-                document.getElementById('progress-section').classList.add('active');
-                document.getElementById('nav-homework').classList.add('active');
-                document.getElementById('nav-progress').classList.add('active');
-            }
-            // Close the modal
-            closeStartupModal();
-        }
-
-        // Reset Functionality (Optional)
-        function resetData() {
-            // Clear all data and reinitialize
-            students = [];
-            saveToLocalStorage();
-            renderHomework();
-            renderProgress();
-            updateClassProgressBar();
-        }
     </script>
 </body>
 </html>
