@@ -664,6 +664,71 @@
             transform: scale(1.05);
         }
 
+        /* Jellyfish Game Modal Styles */
+        .game-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .game-modal {
+            position: relative;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .game-modal .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #d32f2f; /* Red color for visibility */
+        }
+
+        #jellyfish-game-canvas {
+            background: #b3e5fc; /* Light blue background */
+            border: 2px solid #0288d1; /* Blue border */
+            border-radius: 10px;
+        }
+
+        .leaderboard {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .leaderboard h3 {
+            color: #01579b; /* Dark blue */
+        }
+
+        .leaderboard ol {
+            list-style: none;
+            padding: 0;
+        }
+
+        .leaderboard li {
+            background: #81d4fa; /* Light blue */
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .progress-circle {
@@ -691,7 +756,7 @@
                 width: 180px;
             }
 
-            .modal, .reset-modal, .celebration-modal {
+            .modal, .reset-modal, .celebration-modal, .game-modal {
                 padding: 25px;
             }
 
@@ -708,6 +773,11 @@
 
             .reset-modal input {
                 width: 90%;
+            }
+
+            #jellyfish-game-canvas {
+                width: 100%;
+                height: auto;
             }
         }
 
@@ -747,6 +817,10 @@
             .reset-modal input {
                 width: 100%;
             }
+
+            #jellyfish-game-canvas {
+                height: 400px;
+            }
         }
     </style>
 </head>
@@ -773,6 +847,8 @@
         <button id="nav-homework" onclick="toggleSection('homework')" class="active">📝 Homework</button>
         <button id="nav-progress" onclick="toggleSection('progress')">📈 Progress</button>
         <button class="reset-button" onclick="openResetModal()" aria-label="Reset Data">🔄 Reset Data</button>
+        <!-- Narwhal Logo -->
+        <img src="path-to-narwhal-logo.png" id="narwhal-logo" alt="Narwhal Logo" style="width:50px; height:50px; cursor:pointer;">
     </div>
 
     <!-- Countdown and Quote Sections -->
@@ -846,6 +922,20 @@
     <div class="celebration-modal-overlay" id="celebration-modal-overlay">
         <div class="celebration-modal">
             <h3>🎉 All homework completed! Great job! 🎉</h3>
+        </div>
+    </div>
+
+    <!-- Jellyfish Game Modal -->
+    <div id="jellyfish-game-modal" class="game-modal-overlay" onclick="closeJellyfishGame()">
+        <div class="game-modal">
+            <button class="close-button" onclick="closeJellyfishGame()" aria-label="Close Game">✖</button>
+            <canvas id="jellyfish-game-canvas" width="400" height="600"></canvas>
+            <div id="leaderboard" class="leaderboard">
+                <h3>🏆 Leaderboard 🏆</h3>
+                <ol id="leaderboard-list">
+                    <!-- High Scores will be dynamically populated here -->
+                </ol>
+            </div>
         </div>
     </div>
 
@@ -1075,7 +1165,7 @@
                 card.innerHTML = `
                     <img src="${getAvatarURL(student.name)}" alt="${student.name}" onerror="this.src='default-avatar.png'" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
                     <h3 class="student-name">${student.name}</h3>
-                    <div class="progress-circle-container">
+                    <div class="progress-circle-container reverse-triangle">
                         <div class="progress-circle" onclick="openKeypad(${student.id}, 'reading', this)" data-selected="false" data-metric="reading" tabindex="0" role="button" aria-label="Reading progress: ${student.reading} out of ${MAX_READING}">
                             <svg class="progress-ring" width="80" height="80">
                                 <circle class="progress-ring__background" stroke="#b3e5fc" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
@@ -1083,7 +1173,6 @@
                             </svg>
                             <div class="progress-number">${student.reading}</div>
                         </div>
-                        <div class="progress-label">Reading</div>
                         <div class="progress-circle" onclick="openKeypad(${student.id}, 'language', this)" data-selected="false" data-metric="language" tabindex="0" role="button" aria-label="Language progress: ${student.language} out of ${MAX_LANGUAGE}">
                             <svg class="progress-ring" width="80" height="80">
                                 <circle class="progress-ring__background" stroke="#b3e5fc" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
@@ -1091,7 +1180,6 @@
                             </svg>
                             <div class="progress-number">${student.language}</div>
                         </div>
-                        <div class="progress-label">Language</div>
                         <div class="progress-circle" onclick="openKeypad(${student.id}, 'quizzes', this)" data-selected="false" data-metric="quizzes" tabindex="0" role="button" aria-label="Quizzes progress: ${student.quizzes} out of ${MAX_QUIZZES}">
                             <svg class="progress-ring" width="80" height="80">
                                 <circle class="progress-ring__background" stroke="#b3e5fc" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
@@ -1099,8 +1187,8 @@
                             </svg>
                             <div class="progress-number">${student.quizzes}</div>
                         </div>
-                        <div class="progress-label">Quizzes</div>
                     </div>
+                    <div class="progress-label">Quizzes</div>
                 `;
                 progressGrid.appendChild(card);
 
@@ -1318,6 +1406,7 @@
             if (event.key === 'Escape') {
                 closeKeypad();
                 closeResetModal();
+                closeJellyfishGame(); // Also close the game if open
             }
         });
 
@@ -1391,6 +1480,276 @@
                 modalOverlay.style.display = 'none';
             }, 5000);
         }
+
+        /* ============================
+           ========== GAME ============
+           ============================ */
+
+        let canvas, ctx;
+        let jellyfish;
+        let obstacles = [];
+        let animationFrameId;
+        let gameRunning = false;
+        let score = 0;
+        let highScores = [];
+
+        // Game Constants
+        const GRAVITY = 0.5;
+        const FLAP_STRENGTH = -10;
+        const OBSTACLE_WIDTH = 60;
+        const OBSTACLE_GAP = 150;
+        const OBSTACLE_SPEED = 3;
+        const CANVAS_WIDTH = 400;
+        const CANVAS_HEIGHT = 600;
+
+        // Load High Scores from Local Storage
+        function loadHighScores() {
+            const storedScores = JSON.parse(localStorage.getItem('jellyfishHighScores'));
+            if (storedScores) {
+                highScores = storedScores;
+            }
+        }
+
+        // Save High Scores to Local Storage
+        function saveHighScores() {
+            localStorage.setItem('jellyfishHighScores', JSON.stringify(highScores));
+        }
+
+        // Jellyfish Class
+        class Jellyfish {
+            constructor() {
+                this.x = 80;
+                this.y = CANVAS_HEIGHT / 2;
+                this.radius = 20;
+                this.velocity = 0;
+            }
+
+            flap() {
+                this.velocity = FLAP_STRENGTH;
+            }
+
+            update() {
+                this.velocity += GRAVITY;
+                this.y += this.velocity;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.fillStyle = '#66bb6a'; // Green jellyfish
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.closePath();
+
+                // Tentacles
+                ctx.beginPath();
+                ctx.strokeStyle = '#26a69a'; // Teal tentacles
+                ctx.lineWidth = 2;
+                for (let i = -2; i <= 2; i++) {
+                    ctx.moveTo(this.x, this.y + this.radius);
+                    ctx.bezierCurveTo(
+                        this.x + i * 10, this.y + this.radius + 20,
+                        this.x + i * 20, this.y + this.radius + 40,
+                        this.x + i * 10, this.y + this.radius + 60
+                    );
+                }
+                ctx.stroke();
+                ctx.closePath();
+            }
+        }
+
+        // Obstacle Class
+        class Obstacle {
+            constructor() {
+                this.x = CANVAS_WIDTH;
+                this.width = OBSTACLE_WIDTH;
+                this.topHeight = Math.random() * (CANVAS_HEIGHT / 2);
+                this.bottomHeight = CANVAS_HEIGHT - this.topHeight - OBSTACLE_GAP;
+                this.scored = false; // To track scoring
+            }
+
+            update() {
+                this.x -= OBSTACLE_SPEED;
+            }
+
+            draw() {
+                ctx.fillStyle = '#0288d1'; // Blue obstacles
+                // Top Obstacle
+                ctx.fillRect(this.x, 0, this.width, this.topHeight);
+                // Bottom Obstacle
+                ctx.fillRect(this.x, CANVAS_HEIGHT - this.bottomHeight, this.width, this.bottomHeight);
+            }
+
+            isOffScreen() {
+                return this.x + this.width < 0;
+            }
+        }
+
+        // Initialize the Game
+        function initGame() {
+            canvas = document.getElementById('jellyfish-game-canvas');
+            ctx = canvas.getContext('2d');
+            jellyfish = new Jellyfish();
+            obstacles = [];
+            score = 0;
+            loadHighScores();
+
+            // Spawn initial obstacles
+            for (let i = 1; i <= 3; i++) {
+                obstacles.push(new Obstacle());
+            }
+        }
+
+        // Game Loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+            // Update and draw jellyfish
+            jellyfish.update();
+            jellyfish.draw();
+
+            // Update and draw obstacles
+            obstacles.forEach((obstacle, index) => {
+                obstacle.update();
+                obstacle.draw();
+
+                // Collision Detection
+                if (collision(jellyfish, obstacle)) {
+                    endGame();
+                }
+
+                // Update score
+                if (obstacle.x + obstacle.width < jellyfish.x && !obstacle.scored) {
+                    score++;
+                    obstacle.scored = true;
+                }
+
+                // Remove off-screen obstacles
+                if (obstacle.isOffScreen()) {
+                    obstacles.splice(index, 1);
+                    obstacles.push(new Obstacle());
+                }
+            });
+
+            // Check if jellyfish hits the ground or ceiling
+            if (jellyfish.y + jellyfish.radius > CANVAS_HEIGHT || jellyfish.y - jellyfish.radius < 0) {
+                endGame();
+            }
+
+            // Draw score
+            ctx.fillStyle = '#01579b'; // Dark blue
+            ctx.font = '24px Montserrat';
+            ctx.fillText(`Score: ${score}`, 10, 30);
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        // Collision Detection Function
+        function collision(jellyfish, obstacle) {
+            // Simple bounding box collision
+            // Top Obstacle
+            if (
+                jellyfish.x + jellyfish.radius > obstacle.x &&
+                jellyfish.x - jellyfish.radius < obstacle.x + obstacle.width &&
+                jellyfish.y - jellyfish.radius < obstacle.topHeight
+            ) {
+                return true;
+            }
+
+            // Bottom Obstacle
+            if (
+                jellyfish.x + jellyfish.radius > obstacle.x &&
+                jellyfish.x - jellyfish.radius < obstacle.x + obstacle.width &&
+                jellyfish.y + jellyfish.radius > CANVAS_HEIGHT - obstacle.bottomHeight
+            ) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Start the Game
+        function startGame() {
+            if (!gameRunning) {
+                initGame();
+                gameRunning = true;
+                gameLoop();
+            }
+
+            // Add event listener for flapping
+            document.addEventListener('keydown', handleFlap);
+            document.addEventListener('click', handleFlap);
+        }
+
+        // Stop the Game
+        function stopGame() {
+            if (gameRunning) {
+                cancelAnimationFrame(animationFrameId);
+                gameRunning = false;
+                document.removeEventListener('keydown', handleFlap);
+                document.removeEventListener('click', handleFlap);
+            }
+        }
+
+        // Handle Flap Input
+        function handleFlap(event) {
+            jellyfish.flap();
+        }
+
+        // End the Game
+        function endGame() {
+            stopGame();
+            promptHighScore();
+        }
+
+        // Prompt for High Score Entry
+        function promptHighScore() {
+            // Check if the score qualifies for the leaderboard (e.g., top 5)
+            const minHighScore = highScores.length < 5 ? 0 : highScores[highScores.length - 1].score;
+            if (score > minHighScore) {
+                const playerName = prompt("🎮 New High Score! Enter your name:");
+                if (playerName) {
+                    // Add to high scores
+                    highScores.push({ name: playerName, score: score });
+                    // Sort and keep top 5
+                    highScores.sort((a, b) => b.score - a.score);
+                    if (highScores.length > 5) {
+                        highScores.pop();
+                    }
+                    saveHighScores();
+                }
+            }
+            displayLeaderboard();
+        }
+
+        // Display Leaderboard
+        function displayLeaderboard() {
+            const leaderboardList = document.getElementById('leaderboard-list');
+            leaderboardList.innerHTML = '';
+
+            highScores.forEach(entry => {
+                const li = document.createElement('li');
+                li.textContent = `${entry.name}: ${entry.score}`;
+                leaderboardList.appendChild(li);
+            });
+        }
+
+        // Initialize Leaderboard on Game Modal Open
+        function openJellyfishGame() {
+            document.getElementById('jellyfish-game-modal').style.display = 'flex';
+            initGame();
+            displayLeaderboard();
+            startGame();
+        }
+
+        // Close Game Modal Function
+        function closeJellyfishGame() {
+            document.getElementById('jellyfish-game-modal').style.display = 'none';
+            stopGame(); // Terminate the game
+        }
+
+        // Initialize Leaderboard on Game Modal Load
+        document.getElementById('jellyfish-game-modal').addEventListener('load', displayLeaderboard);
+
     </script>
 </body>
 </html>
