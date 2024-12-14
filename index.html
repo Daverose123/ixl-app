@@ -7,13 +7,13 @@
     <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <!-- Google Fonts for Professional Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         /* General Styles */
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Montserrat', sans-serif; /* Updated Font */
             background: linear-gradient(to bottom, #e0f7fa, #b2ebf2); /* Subtle underwater gradient */
             margin: 0;
             padding: 0;
@@ -47,6 +47,9 @@
             max-width: 500px;
             text-align: center;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center buttons */
         }
 
         .modal h2 {
@@ -61,12 +64,29 @@
             color: #0277bd; /* Slightly darker blue */
         }
 
-        .modal button {
+        .modal-buttons {
+            display: flex;
+            flex-direction: column; /* Stack buttons vertically */
+            align-items: center;
+            gap: 15px; /* Space between buttons */
+            width: 100%;
+        }
+
+        /* For larger screens, arrange buttons horizontally */
+        @media (min-width: 600px) {
+            .modal-buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+
+        .modal-buttons button {
+            width: 80%;
+            max-width: 200px;
             background: linear-gradient(45deg, #0288d1, #01579b); /* Blue gradient */
             border: none;
             color: white;
             padding: 15px 25px;
-            margin: 10px;
             font-size: 1rem;
             border-radius: 30px;
             cursor: pointer;
@@ -77,7 +97,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
-        .modal button:hover {
+        .modal-buttons button:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 15px rgba(0,0,0,0.3);
         }
@@ -96,6 +116,12 @@
         @keyframes rotateBackground {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
+        }
+
+        @keyframes backgroundShift {
+            0% { background: linear-gradient(135deg, #b3e5fc, #81d4fa); }
+            50% { background: linear-gradient(135deg, #81d4fa, #4fc3f7); }
+            100% { background: linear-gradient(135deg, #b3e5fc, #81d4fa); }
         }
 
         /* Navigation Bar Styles */
@@ -170,7 +196,15 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
-            animation: slideIn 1s ease-in-out;
+            opacity: 0; /* Initial state for animation */
+            transform: translateY(10px) scale(0.98); /* Initial transform for animation */
+            transition: transform 0.5s ease, opacity 0.5s ease; /* Transition properties */
+            animation: backgroundShift 20s ease-in-out infinite; /* Background animation */
+        }
+
+        .quote-container.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
 
         .quote-container::before {
@@ -237,7 +271,18 @@
             height: 100%;
             background: linear-gradient(90deg, #0288d1, #01579b); /* Blue gradient */
             border-radius: 12.5px;
-            transition: width 1s ease-in-out;
+            transition: width 0.5s ease-in-out; /* Smooth transition */
+        }
+
+        .progress-percentage {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            text-align: center;
+            color: #ffffff;
+            font-weight: bold;
+            line-height: 25px; /* Match the height of the progress bar */
         }
 
         /* Grid Container */
@@ -248,6 +293,14 @@
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
+        }
+
+        /* Progress Circle Container */
+        .progress-circle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px;
         }
 
         /* Student Card Styles */
@@ -319,15 +372,20 @@
             color: white;
         }
 
-        /* Progress Circle Styles */
-        .progress-circle-container {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
-            margin: 25px 0;
-            flex-wrap: wrap;
+        .student-name.completed::after {
+            content: ' 🏅';
+            font-size: 1rem;
+            margin-left: 5px;
         }
 
+        .student-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #01579b;
+            margin-bottom: 10px;
+        }
+
+        /* Progress Circle Styles */
         .progress-circle {
             position: relative;
             width: 80px;
@@ -376,28 +434,24 @@
             stroke-width: 10;
         }
 
-        .progress-circle-content {
+        /* Progress Number Styles */
+        .progress-number {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 0.8rem;
-            color: #01579b; /* Dark blue */
-            text-align: center;
-        }
-
-        /* Medal Styles */
-        .student-name.completed::after {
-            content: ' 🏅';
-            font-size: 1rem;
-            margin-left: 5px;
-        }
-
-        .student-name {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: #01579b;
-            margin-bottom: 10px;
+            color: #01579b; /* Dark blue */
+        }
+
+        /* Progress Label Styles */
+        .progress-label {
+            margin-top: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #0288d1; /* Blue */
+            text-align: center;
         }
 
         /* Homework Section Styles */
@@ -439,7 +493,7 @@
             padding: 25px;
             width: 300px;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             z-index: 1000;
             left: 50%;
             top: 50%;
@@ -615,12 +669,20 @@
                 height: 60px;
             }
 
-            .progress-circle-content {
-                font-size: 0.7rem;
+            .progress-number {
+                font-size: 1rem;
+            }
+
+            .progress-label {
+                font-size: 0.9rem;
             }
 
             .class-progress-bar {
                 width: 90%;
+            }
+
+            .progress-circle-container {
+                margin: 15px;
             }
 
             .student-card {
@@ -653,8 +715,12 @@
                 height: 50px;
             }
 
-            .progress-circle-content {
-                font-size: 0.6rem;
+            .progress-number {
+                font-size: 0.9rem;
+            }
+
+            .progress-label {
+                font-size: 0.8rem;
             }
 
             .class-progress-bar {
@@ -688,13 +754,15 @@
         <div class="modal">
             <h2>Welcome! 🎉</h2>
             <p>What would you like to do today?</p>
-            <button onclick="selectOption('homework')" aria-label="Check Homework">
-                📝 Check Homework
-            </button>
-            <button onclick="selectOption('progress')" aria-label="Record IXL and Read Theory Progress">
-                📈 Record Progress
-            </button>
-            <!-- Removed 'Use Both' Option as per Bug Fix -->
+            <div class="modal-buttons">
+                <button onclick="selectOption('homework')" aria-label="Check Homework">
+                    📝 Check Homework
+                </button>
+                <button onclick="selectOption('progress')" aria-label="Record IXL and Read Theory Progress">
+                    📈 Record Progress
+                </button>
+                <!-- Removed 'Use Both' Option as per Bug Fix -->
+            </div>
         </div>
     </div>
 
@@ -710,7 +778,7 @@
         <span id="days-left">📅 Only loading days left...</span>
     </div>
 
-    <div class="quote-container">
+    <div class="quote-container" id="quote-container">
         <span id="daily-quote">📜 Loading daily quote...</span>
     </div>
 
@@ -729,6 +797,7 @@
             <h2>📚 IXL & Read Theory Progress Tracker 🎯</h2>
             <div class="class-progress-bar">
                 <div class="class-progress-fill" id="class-progress-fill"></div>
+                <span class="progress-percentage" id="progress-percentage">0%</span>
             </div>
             <div class="grid-container" id="progress-grid">
                 <!-- Progress Student Cards will be dynamically generated -->
@@ -887,7 +956,16 @@
             const today = new Date();
             const dayOfMonth = today.getDate();
             const quoteIndex = (dayOfMonth - 1) % QUOTES.length;
-            document.getElementById('daily-quote').textContent = QUOTES[quoteIndex];
+            const quoteElement = document.getElementById('daily-quote');
+
+            // Remove 'visible' class to trigger fade-out
+            quoteElement.parentElement.classList.remove('visible');
+
+            // Allow time for fade-out
+            setTimeout(() => {
+                quoteElement.textContent = QUOTES[quoteIndex];
+                quoteElement.parentElement.classList.add('visible');
+            }, 500); // Half of the transition duration
         }
 
         // Save Data to Local Storage
@@ -935,18 +1013,21 @@
 
         // Update Class Progress Bar
         function updateClassProgressBar() {
-            const totalMetrics = students.length * 3;
+            let totalMetrics = students.length * (MAX_READING + MAX_LANGUAGE + MAX_QUIZZES);
             let completedMetrics = 0;
 
             students.forEach(student => {
-                if (isStudentComplete(student)) {
-                    completedMetrics += 3;
-                }
+                completedMetrics += student.reading;
+                completedMetrics += student.language;
+                completedMetrics += student.quizzes;
             });
 
-            const progressPercent = (completedMetrics / totalMetrics) * 100;
+            const progressPercent = Math.round((completedMetrics / totalMetrics) * 100);
             const progressFill = document.getElementById('class-progress-fill');
+            const progressPercentage = document.getElementById('progress-percentage');
+
             progressFill.style.width = `${progressPercent}%`;
+            progressPercentage.textContent = `${progressPercent}%`;
 
             if (progressPercent === 100 && !progressAlertShown) {
                 triggerMassiveConfetti();
@@ -1002,28 +1083,25 @@
                                 <circle class="progress-ring__background" stroke="#b3e5fc" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                                 <circle class="progress-ring__circle" stroke="#29b6f6" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                             </svg>
-                            <div class="progress-circle-content">
-                                <span>Reading</span><br>${student.reading}
-                            </div>
+                            <div class="progress-number">${student.reading}</div>
                         </div>
+                        <div class="progress-label">Reading</div>
                         <div class="progress-circle" onclick="openKeypad(${student.id}, 'language', this)" data-selected="false" data-metric="language" tabindex="0" role="button" aria-label="Language progress: ${student.language} out of ${MAX_LANGUAGE}">
                             <svg class="progress-ring" width="80" height="80">
                                 <circle class="progress-ring__background" stroke="#b3e5fc" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                                 <circle class="progress-ring__circle" stroke="#26c6da" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                             </svg>
-                            <div class="progress-circle-content">
-                                <span>Language</span><br>${student.language}
-                            </div>
+                            <div class="progress-number">${student.language}</div>
                         </div>
+                        <div class="progress-label">Language</div>
                         <div class="progress-circle" onclick="openKeypad(${student.id}, 'quizzes', this)" data-selected="false" data-metric="quizzes" tabindex="0" role="button" aria-label="Quizzes progress: ${student.quizzes} out of ${MAX_QUIZZES}">
                             <svg class="progress-ring" width="80" height="80">
                                 <circle class="progress-ring__background" stroke="#b3e5fc" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                                 <circle class="progress-ring__circle" stroke="#66bb6a" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                             </svg>
-                            <div class="progress-circle-content">
-                                <span>Quizzes</span><br>${student.quizzes}
-                            </div>
+                            <div class="progress-number">${student.quizzes}</div>
                         </div>
+                        <div class="progress-label">Quizzes</div>
                     </div>
                 `;
                 progressGrid.appendChild(card);
@@ -1148,6 +1226,7 @@
                 activeStudent[activeMetric] = Math.min(value, getMaxMetric(activeMetric));
                 saveToLocalStorage();
                 renderProgress();
+                updateClassProgressBar(); // Ensure progress bar updates dynamically
             }
             closeKeypad();
         }
