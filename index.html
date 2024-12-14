@@ -18,12 +18,17 @@
             margin: 20px;
             font-size: 2.5rem;
             font-weight: bold;
+            /* Removed gradient from h1 */
+            display: inline-block;
+            padding: 10px 20px;
+        }
+
+        /* New style for title text with gradient */
+        .title-text {
             background: linear-gradient(135deg, #4267b2, #3b5998);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-            display: inline-block;
-            padding: 10px 20px;
         }
 
         .reset-btn {
@@ -102,7 +107,7 @@
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             padding: 20px;
             max-width: 1200px;
@@ -117,6 +122,10 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            /* Make student cards square */
+            aspect-ratio: 1 / 1;
+            max-width: 200px; /* Adjust as needed */
+            margin: 0 auto;
         }
 
         .student-card img {
@@ -149,6 +158,12 @@
         .progress-circle:focus {
             transform: scale(1.05);
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-ring__background {
+            stroke: lightgrey; /* Faint grey placeholder */
+            stroke-width: 8;
+            fill: transparent;
         }
 
         .progress-ring__circle {
@@ -194,6 +209,14 @@
         /* Focus styles for accessibility */
         .progress-circle:focus {
             box-shadow: 0 0 15px rgba(0, 0, 255, 0.5);
+        }
+
+        /* Medal emoji styles */
+        .student-name.completed::before,
+        .student-name.completed::after {
+            content: '🏅';
+            font-size: 1rem;
+            margin: 0 5px;
         }
 
         .keypad-overlay {
@@ -299,6 +322,10 @@
             .class-progress-bar {
                 width: 80%;
             }
+
+            .student-card {
+                max-width: 180px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -318,6 +345,10 @@
             .class-progress-bar {
                 width: 90%;
             }
+
+            .student-card {
+                max-width: 160px;
+            }
         }
     </style>
 </head>
@@ -325,7 +356,9 @@
     <button class="reset-btn" onclick="requestReset()">Reset All Data</button>
 
     <h1>
-        <span class="emoji">🎯</span> IXL and Read Theory Progress Tracker <span class="emoji">📊</span>
+        <span class="emoji">🎯</span> 
+        <span class="title-text">IXL and Read Theory Progress Tracker</span> 
+        <span class="emoji">📊</span>
     </h1>
 
     <div class="countdown-container">
@@ -500,6 +533,7 @@
                 triggerStudentConfetti(student.id);
                 localStorage.setItem(confettiKey, 'true');
 
+                // Add 'completed' class to student name to show medals
                 const studentNameElem = document.querySelector(`#student-${student.id} .student-name`);
                 if (studentNameElem) {
                     studentNameElem.classList.add('completed');
@@ -584,6 +618,7 @@
                     <div class="progress-circle-container">
                         <div class="progress-circle" onclick="openKeypad(${index}, 'reading', this)" data-selected="false" data-metric="reading" tabindex="0" role="button" aria-label="Reading progress: ${student.reading} out of ${MAX_READING}">
                             <svg class="progress-ring" width="80" height="80">
+                                <circle class="progress-ring__background" stroke="lightgrey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                                 <circle class="progress-ring__circle" stroke="grey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                             </svg>
                             <div class="progress-circle-content">
@@ -592,6 +627,7 @@
                         </div>
                         <div class="progress-circle" onclick="openKeypad(${index}, 'language', this)" data-selected="false" data-metric="language" tabindex="0" role="button" aria-label="Language progress: ${student.language} out of ${MAX_LANGUAGE}">
                             <svg class="progress-ring" width="80" height="80">
+                                <circle class="progress-ring__background" stroke="lightgrey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                                 <circle class="progress-ring__circle" stroke="grey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                             </svg>
                             <div class="progress-circle-content">
@@ -600,6 +636,7 @@
                         </div>
                         <div class="progress-circle" onclick="openKeypad(${index}, 'quizzes', this)" data-selected="false" data-metric="quizzes" tabindex="0" role="button" aria-label="Quizzes progress: ${student.quizzes} out of ${MAX_QUIZZES}">
                             <svg class="progress-ring" width="80" height="80">
+                                <circle class="progress-ring__background" stroke="lightgrey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                                 <circle class="progress-ring__circle" stroke="grey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
                             </svg>
                             <div class="progress-circle-content">
@@ -624,6 +661,12 @@
                     if (metric === 'quizzes') percent = quizzesPercent;
                     setCircularProgress(circle, percent);
                 });
+
+                // Add medals if student is complete
+                if (isStudentComplete(student)) {
+                    const studentNameElem = card.querySelector('.student-name');
+                    studentNameElem.classList.add('completed');
+                }
             });
 
             checkAndTriggerConfetti();
