@@ -14,16 +14,6 @@
             box-sizing: border-box;
         }
 
-        .confetti-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
         h1 {
             margin: 20px;
             font-size: 2.5rem;
@@ -32,14 +22,8 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-            position: relative;
             display: inline-block;
             padding: 10px 20px;
-        }
-
-        .emoji {
-            -webkit-background-clip: initial;
-            -webkit-text-fill-color: initial;
         }
 
         .reset-btn {
@@ -63,7 +47,7 @@
         }
 
         .countdown-container, .quote-container {
-            margin: 10px auto 20px auto;
+            margin: 10px auto;
             padding: 10px;
             max-width: 600px;
             text-align: center;
@@ -80,27 +64,22 @@
             color: #555;
         }
 
-        /* Class progress bar fixed in place */
-        #progress-wrapper {
-            position: fixed;
-            top: 220px; /* Adjust this value until it looks good under the quotes */
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1; 
-            background: #f0f8ff;
+        /* Class progress integrated right after the quotes */
+        .progress-section {
+            margin: 10px auto 20px;
             padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            max-width: 600px;
+            text-align: center;
         }
 
-        #progress-label {
-            font-size: 0.9rem;
+        .progress-section h2 {
+            font-size: 1rem;
             font-weight: bold;
             color: #333;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
 
-        #class-progress-bar {
+        .class-progress-bar {
             position: relative;
             width: 300px;
             height: 30px;
@@ -110,7 +89,7 @@
             margin: 0 auto; /* Center the bar */
         }
 
-        #class-progress-fill {
+        .class-progress-fill {
             position: absolute;
             left: 0;
             top: 0;
@@ -121,7 +100,6 @@
             transition: width 1s ease-in-out;
         }
 
-        /* 6 columns for student cards */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -129,7 +107,6 @@
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
-            margin-top: 350px; /* Extra margin so cards appear below the fixed bar */
         }
 
         .student-card {
@@ -150,27 +127,18 @@
             object-fit: cover;
         }
 
-        .student-name.completed::before {
-            content: "🏅 ";
-            font-size: 1.5rem;
-        }
-
-        .student-name.completed::after {
-            content: " 🏅";
-            font-size: 1.5rem;
-        }
-
-        .progress-circle-container {
+        .progress-rect-container {
             display: flex;
             justify-content: center;
-            gap: 15px; /* spacing between circles */
+            gap: 10px;
             margin: 20px 0;
         }
 
-        .progress-circle {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
+        /* Rectangle shaped indicators */
+        .progress-rect {
+            width: 60px;
+            height: 35px;
+            border-radius: 10px;
             background-color: #e0e0e0;
             display: flex;
             flex-direction: column;
@@ -179,40 +147,27 @@
             box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             transition: box-shadow 0.3s;
-            padding: 5px;
+            padding: 2px;
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
         }
 
-        .progress-circle[data-progress="low"] {
+        .progress-rect.low {
             box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.7);
         }
 
-        .progress-circle[data-progress="medium"] {
+        .progress-rect.medium {
             box-shadow: 0 0 15px 5px rgba(255, 255, 0, 0.7);
         }
 
-        .progress-circle[data-progress="high"] {
+        .progress-rect.high {
             box-shadow: 0 0 15px 5px rgba(0, 255, 0, 0.7);
         }
 
-        .progress-circle[data-selected="true"] {
+        .progress-rect[data-selected="true"] {
             box-shadow: 0 0 20px 5px rgba(0, 0, 255, 0.8);
-        }
-
-        .progress-circle .label {
-            font-weight: bold;
-            color: #333;
-            font-size: 0.5rem;
-            text-align: center;
-            line-height: 1;
-            white-space: normal;
-            margin-bottom: 2px;
-        }
-
-        .progress-circle .value {
-            font-size: 0.6rem;
-            font-weight: bold;
-            text-align: center;
-            line-height: 1;
         }
 
         .keypad-overlay {
@@ -316,11 +271,11 @@
         <span id="daily-quote"></span>
     </div>
 
-    <!-- Class Progress fixed at a chosen position -->
-    <div id="progress-wrapper">
-        <div id="progress-label">Class Progress 🌟</div>
-        <div id="class-progress-bar">
-            <div id="class-progress-fill"></div>
+    <!-- Class Progress integrated with quotes section -->
+    <div class="progress-section">
+        <h2>Class Progress 🌟</h2>
+        <div class="class-progress-bar">
+            <div class="class-progress-fill" id="class-progress-fill"></div>
         </div>
     </div>
 
@@ -560,18 +515,15 @@
                     <canvas id="confetti-${student.id}" class="confetti-canvas"></canvas>
                     <img src="${imgPath}" alt="${student.name}" onerror="this.src='${IMAGE_BASE_URL}default.jpg'">
                     <h3 class="student-name">${student.name}</h3>
-                    <div class="progress-circle-container">
-                        <div class="progress-circle" data-progress="${readingProgress}" onclick="openKeypad(${index}, 'reading', this)">
-                            <span class="label">Reading</span>
-                            <span class="value">${student.reading}</span>
+                    <div class="progress-rect-container">
+                        <div class="progress-rect ${readingProgress}" onclick="openKeypad(${index}, 'reading', this)" data-selected="false">
+                            Reading<br>${student.reading}
                         </div>
-                        <div class="progress-circle" data-progress="${languageProgress}" onclick="openKeypad(${index}, 'language', this)">
-                            <span class="label">Language</span>
-                            <span class="value">${student.language}</span>
+                        <div class="progress-rect ${languageProgress}" onclick="openKeypad(${index}, 'language', this)" data-selected="false">
+                            Language<br>${student.language}
                         </div>
-                        <div class="progress-circle" data-progress="${quizzesProgress}" onclick="openKeypad(${index}, 'quizzes', this)">
-                            <span class="label">Quizzes</span>
-                            <span class="value">${student.quizzes}</span>
+                        <div class="progress-rect ${quizzesProgress}" onclick="openKeypad(${index}, 'quizzes', this)" data-selected="false">
+                            Quizzes<br>${student.quizzes}
                         </div>
                     </div>
                 `;
@@ -618,8 +570,8 @@
             keypad.style.display = 'block';
             document.getElementById('keypad-display').textContent = '';
 
-            document.querySelectorAll('.progress-circle').forEach(circle => {
-                circle.dataset.selected = "false";
+            document.querySelectorAll('.progress-rect').forEach(rect => {
+                rect.dataset.selected = "false";
             });
 
             element.dataset.selected = "true";
