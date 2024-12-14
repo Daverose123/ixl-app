@@ -129,19 +129,18 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        /* Navbar Circular Buttons with Text Labels */
+        /* Navbar Oval Buttons with Emoji and Text Labels */
         .navbar button.nav-button {
             background: none; /* Transparent */
             border: 2px solid #0288d1; /* Blue border */
-            border-radius: 50%; /* Circular */
+            border-radius: 25px; /* Oval shape */
             color: #01579b; /* Dark blue text */
             font-size: 1rem;
             cursor: pointer;
             transition: transform 0.3s, border-color 0.3s;
-            width: 60px;
-            height: 60px;
+            width: 150px; /* Increased width for oval */
+            height: 50px; /* Fixed height */
             display: flex;
-            flex-direction: column; /* Stack emoji and text */
             align-items: center;
             justify-content: center;
             padding: 0;
@@ -149,7 +148,7 @@
         }
 
         .navbar button.nav-button:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
             border-color: #01579b; /* Darker blue on hover */
         }
 
@@ -158,10 +157,10 @@
             color: white; /* White text when active */
         }
 
-        .navbar button.nav-button span.label {
-            font-size: 0.8rem;
-            margin-top: 5px;
-            display: block;
+        .navbar button.nav-button .button-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         /* Reset Button Styles */
@@ -672,7 +671,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 2100; /* Above game modal */
+            z-index: 2100; /* Above other modals */
             animation: fadeIn 0.5s ease-in-out;
         }
 
@@ -834,20 +833,6 @@
             justify-content: center;
         }
 
-        /* Minimalistic Menu Bar */
-        .navbar {
-            background: linear-gradient(to right, #e0f7fa, #b2ebf2); /* Match main background */
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 900;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
         /* Ensure Modal Buttons are Same Size */
         .modal-buttons button {
             width: 200px; /* Fixed width */
@@ -877,12 +862,16 @@
     <!-- Navigation Bar -->
     <div class="navbar">
         <button id="nav-homework" class="nav-button active" onclick="toggleSection('homework')" aria-label="Navigate to Homework">
-            📝
-            <span class="label">Homework</span>
+            <div class="button-content">
+                📝
+                <span>Homework</span>
+            </div>
         </button>
         <button id="nav-progress" class="nav-button" onclick="toggleSection('progress')" aria-label="Navigate to Progress">
-            📈
-            <span class="label">Progress</span>
+            <div class="button-content">
+                📈
+                <span>Progress</span>
+            </div>
         </button>
         <button class="reset-button" onclick="openResetModal()" aria-label="Reset Data">🔄 Reset</button>
         <!-- Whale Emoji as Logo -->
@@ -1534,7 +1523,7 @@
 
         // Fix 1: Menu bar background and text labels
         // - Updated CSS to set navbar background to match main background.
-        // - Added text labels alongside emojis in navbar buttons.
+        // - Styled the navbar buttons as long ovals with both emojis and text labels.
 
         // Fix 2: Progress tracker visibility and navigation functionality
         // - Changed the default display of progress-section to 'none'.
