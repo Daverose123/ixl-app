@@ -11,6 +11,7 @@
             margin: 0;
             padding: 0;
             text-align: center;
+            box-sizing: border-box;
         }
 
         .confetti-canvas {
@@ -79,13 +80,13 @@
             color: #555;
         }
 
-        /* Class progress is now fixed under the quotes */
+        /* Class progress bar fixed in place */
         #progress-wrapper {
             position: fixed;
-            top: 180px; /* Adjust if needed */
+            top: 220px; /* Adjust this value until it looks good under the quotes */
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1; /* Lower than keypad overlay and keypad */
+            z-index: 1; 
             background: #f0f8ff;
             padding: 10px;
             border-radius: 10px;
@@ -128,7 +129,7 @@
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
-            margin-top: 250px; /* Adjust to ensure grid appears below fixed bar */
+            margin-top: 350px; /* Extra margin so cards appear below the fixed bar */
         }
 
         .student-card {
@@ -138,7 +139,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
             position: relative;
-            z-index: 2;
             overflow: hidden;
         }
 
@@ -163,14 +163,13 @@
         .progress-circle-container {
             display: flex;
             justify-content: center;
-            gap: 15px; /* Add spacing between circles */
+            gap: 15px; /* spacing between circles */
             margin: 20px 0;
         }
 
-        /* Adjust progress circles */
         .progress-circle {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             background-color: #e0e0e0;
             display: flex;
@@ -180,8 +179,7 @@
             box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
             cursor: pointer;
             transition: box-shadow 0.3s;
-            font-size: 0.7rem;
-            padding: 3px; /* Add padding inside the circle */
+            padding: 5px;
         }
 
         .progress-circle[data-progress="low"] {
@@ -203,8 +201,10 @@
         .progress-circle .label {
             font-weight: bold;
             color: #333;
-            font-size: 0.5rem; /* Smaller font for labels to fit */
+            font-size: 0.5rem;
             text-align: center;
+            line-height: 1;
+            white-space: normal;
             margin-bottom: 2px;
         }
 
@@ -212,6 +212,7 @@
             font-size: 0.6rem;
             font-weight: bold;
             text-align: center;
+            line-height: 1;
         }
 
         .keypad-overlay {
@@ -315,7 +316,7 @@
         <span id="daily-quote"></span>
     </div>
 
-    <!-- Class Progress fixed under the quotes -->
+    <!-- Class Progress fixed at a chosen position -->
     <div id="progress-wrapper">
         <div id="progress-label">Class Progress 🌟</div>
         <div id="class-progress-bar">
