@@ -661,7 +661,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 1600;
+            z-index: 2100; /* Above game modal */
             animation: fadeIn 0.5s ease-in-out;
         }
 
@@ -876,11 +876,6 @@
         .emoji-logo:hover {
             transform: scale(1.1);
             box-shadow: 0 0 10px rgba(0,0,0,0.2);
-        }
-
-        /* Celebration Modal and Confetti z-index */
-        .celebration-modal-overlay {
-            z-index: 2100; /* Above game modal */
         }
 
         /* Ensure Progress Circles Layout */
@@ -1602,16 +1597,16 @@
         let gameRunning = false;
         let score = 0;
         let highScores = [];
-        let gameOverFlag = false; // Flag to prevent multiple endGame() calls
+        let gameOverFlagGame = false; // Flag to prevent multiple endGame() calls
 
         // Game Constants
-        const GRAVITY = 0.5;
-        const FLAP_STRENGTH = -10;
-        const OBSTACLE_WIDTH = 60;
-        const OBSTACLE_GAP = 150; // Increased gap for better playability
-        const OBSTACLE_SPEED = 3;
-        const CANVAS_WIDTH = 400;
-        const CANVAS_HEIGHT = 600;
+        const GRAVITY_GAME = 0.5;
+        const FLAP_STRENGTH_GAME = -10;
+        const OBSTACLE_WIDTH_GAME = 60;
+        const OBSTACLE_GAP_GAME = 150; // Increased gap for better playability
+        const OBSTACLE_SPEED_GAME = 3;
+        const CANVAS_WIDTH_GAME = 400;
+        const CANVAS_HEIGHT_GAME = 600;
 
         // Load High Scores from Local Storage
         function loadHighScoresGame() {
@@ -1627,20 +1622,20 @@
         }
 
         // Jellyfish Class
-        class JellyfishGame {
+        class JellyfishGameClass {
             constructor() {
                 this.x = 80;
-                this.y = CANVAS_HEIGHT / 2;
+                this.y = CANVAS_HEIGHT_GAME / 2;
                 this.radius = 20;
                 this.velocity = 0;
             }
 
             flap() {
-                this.velocity = FLAP_STRENGTH;
+                this.velocity = FLAP_STRENGTH_GAME;
             }
 
             update() {
-                this.velocity += GRAVITY;
+                this.velocity += GRAVITY_GAME;
                 this.y += this.velocity;
             }
 
@@ -1669,17 +1664,17 @@
         }
 
         // Obstacle Class
-        class ObstacleGame {
+        class ObstacleGameClass {
             constructor() {
-                this.x = CANVAS_WIDTH;
-                this.width = OBSTACLE_WIDTH;
-                this.topHeight = Math.random() * (CANVAS_HEIGHT / 2 - OBSTACLE_GAP);
-                this.bottomHeight = CANVAS_HEIGHT - this.topHeight - OBSTACLE_GAP;
+                this.x = CANVAS_WIDTH_GAME;
+                this.width = OBSTACLE_WIDTH_GAME;
+                this.topHeight = Math.random() * (CANVAS_HEIGHT_GAME / 2 - OBSTACLE_GAP_GAME);
+                this.bottomHeight = CANVAS_HEIGHT_GAME - this.topHeight - OBSTACLE_GAP_GAME;
                 this.scored = false; // To track scoring
             }
 
             update() {
-                this.x -= OBSTACLE_SPEED;
+                this.x -= OBSTACLE_SPEED_GAME;
             }
 
             draw() {
@@ -1687,7 +1682,7 @@
                 // Top Obstacle
                 ctx.fillRect(this.x, 0, this.width, this.topHeight);
                 // Bottom Obstacle
-                ctx.fillRect(this.x, CANVAS_HEIGHT - this.bottomHeight, this.width, this.bottomHeight);
+                ctx.fillRect(this.x, CANVAS_HEIGHT_GAME - this.bottomHeight, this.width, this.bottomHeight);
             }
 
             isOffScreen() {
@@ -1696,24 +1691,24 @@
         }
 
         // Initialize the Game
-        function initGame() {
+        function initGameGame() {
             canvas = document.getElementById('jellyfish-game-canvas');
             ctx = canvas.getContext('2d');
-            jellyfish = new JellyfishGame();
+            jellyfish = new JellyfishGameClass();
             obstacles = [];
             score = 0;
-            gameOverFlag = false; // Reset game over flag
+            gameOverFlagGame = false; // Reset game over flag
             loadHighScoresGame();
 
             // Spawn initial obstacles
             for (let i = 1; i <= 3; i++) {
-                obstacles.push(new ObstacleGame());
+                obstacles.push(new ObstacleGameClass());
             }
         }
 
         // Game Loop
-        function gameLoop() {
-            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        function gameLoopGame() {
+            ctx.clearRect(0, 0, CANVAS_WIDTH_GAME, CANVAS_HEIGHT_GAME);
 
             // Update and draw jellyfish
             jellyfish.update();
@@ -1726,7 +1721,7 @@
 
                 // Collision Detection
                 if (collisionGame(jellyfish, obstacle)) {
-                    endGame();
+                    endGameGame();
                 }
 
                 // Update score
@@ -1738,13 +1733,13 @@
                 // Remove off-screen obstacles
                 if (obstacle.isOffScreen()) {
                     obstacles.splice(index, 1);
-                    obstacles.push(new ObstacleGame());
+                    obstacles.push(new ObstacleGameClass());
                 }
             });
 
             // Check if jellyfish hits the ground or ceiling
-            if (jellyfish.y + jellyfish.radius > CANVAS_HEIGHT || jellyfish.y - jellyfish.radius < 0) {
-                endGame();
+            if (jellyfish.y + jellyfish.radius > CANVAS_HEIGHT_GAME || jellyfish.y - jellyfish.radius < 0) {
+                endGameGame();
             }
 
             // Draw score
@@ -1752,8 +1747,8 @@
             ctx.font = '24px Montserrat';
             ctx.fillText(`Score: ${score}`, 10, 30);
 
-            if (!gameOverFlag) {
-                animationFrameId = requestAnimationFrame(gameLoop);
+            if (!gameOverFlagGame) {
+                animationFrameId = requestAnimationFrame(gameLoopGame);
             }
         }
 
@@ -1773,7 +1768,7 @@
             if (
                 jellyfish.x + jellyfish.radius > obstacle.x &&
                 jellyfish.x - jellyfish.radius < obstacle.x + obstacle.width &&
-                jellyfish.y + jellyfish.radius > CANVAS_HEIGHT - obstacle.bottomHeight
+                jellyfish.y + jellyfish.radius > CANVAS_HEIGHT_GAME - obstacle.bottomHeight
             ) {
                 return true;
             }
@@ -1782,11 +1777,11 @@
         }
 
         // Start the Game
-        function startGame() {
+        function startGameGame() {
             if (!gameRunning) {
-                initGame();
+                initGameGame();
                 gameRunning = true;
-                gameLoop();
+                gameLoopGame();
             }
 
             // Add event listener for flapping
@@ -1795,7 +1790,7 @@
         }
 
         // Stop the Game
-        function stopGame() {
+        function stopGameGame() {
             if (gameRunning) {
                 cancelAnimationFrame(animationFrameId);
                 gameRunning = false;
@@ -1810,10 +1805,10 @@
         }
 
         // End the Game
-        function endGame() {
-            if (gameOverFlag) return; // Prevent multiple calls
-            gameOverFlag = true; // Set flag to prevent re-entry
-            stopGame();
+        function endGameGame() {
+            if (gameOverFlagGame) return; // Prevent multiple calls
+            gameOverFlagGame = true; // Set flag to prevent re-entry
+            stopGameGame();
             promptHighScoreGame();
         }
 
@@ -1852,15 +1847,15 @@
         // Initialize Leaderboard on Game Modal Open
         function openJellyfishGame() {
             document.getElementById('jellyfish-game-modal').style.display = 'flex';
-            initGame();
+            initGameGame();
             displayLeaderboardGame();
-            startGame();
+            startGameGame();
         }
 
         // Close Game Modal Function
         function closeJellyfishGame() {
             document.getElementById('jellyfish-game-modal').style.display = 'none';
-            stopGame(); // Terminate the game
+            stopGameGame(); // Terminate the game
         }
 
         /* ============================
@@ -1881,7 +1876,7 @@
 
         // Additional Fixes for Game:
         // - Increased OBSTACLE_GAP to 150 for better playability.
-        // - Ensured gameOverFlag prevents multiple endGame() calls.
+        // - Ensured gameOverFlagGame prevents multiple endGame() calls.
 
         // Ensure the confetti appears above the celebration modal
         function triggerMassiveConfetti() {
