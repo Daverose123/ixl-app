@@ -102,7 +102,7 @@
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
             padding: 20px;
             max-width: 1200px;
@@ -127,47 +127,73 @@
             object-fit: cover;
         }
 
-        .progress-rect-container {
+        /* New styles for circular progress indicators */
+        .progress-circle-container {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 20px;
             margin: 20px 0;
+            flex-wrap: wrap;
         }
 
-        /* Rectangle shaped indicators */
-        .progress-rect {
-            width: 60px;
-            height: 35px;
-            border-radius: 10px;
-            background-color: #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
+        .progress-circle {
+            position: relative;
+            width: 80px;
+            height: 80px;
             cursor: pointer;
-            transition: box-shadow 0.3s;
-            padding: 2px;
-            font-size: 0.6rem;
-            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            outline: none; /* Remove default focus outline */
+        }
+
+        .progress-circle:hover,
+        .progress-circle:focus {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dashoffset 1s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            stroke-dasharray: 188.4 188.4; /* 2 * PI * 30 */
+            stroke-dashoffset: 188.4;
+        }
+
+        /* Dynamic colors based on progress */
+        .progress-circle[data-metric="reading"] .progress-ring__circle {
+            stroke: #4caf50; /* Green for Reading */
+        }
+
+        .progress-circle[data-metric="language"] .progress-ring__circle {
+            stroke: #2196f3; /* Blue for Language */
+        }
+
+        .progress-circle[data-metric="quizzes"] .progress-ring__circle {
+            stroke: #ff9800; /* Orange for Quizzes */
+        }
+
+        .progress-circle.selected .progress-ring__circle {
+            stroke: #0000ff; /* Change to a distinct color when selected */
+            stroke-width: 10;
+        }
+
+        .progress-circle.selected .progress-circle-content {
+            color: #0000ff;
+        }
+
+        .progress-circle-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
             color: #333;
             text-align: center;
         }
 
-        .progress-rect.low {
-            box-shadow: 0 0 15px 5px rgba(255, 0, 0, 0.7);
-        }
-
-        .progress-rect.medium {
-            box-shadow: 0 0 15px 5px rgba(255, 255, 0, 0.7);
-        }
-
-        .progress-rect.high {
-            box-shadow: 0 0 15px 5px rgba(0, 255, 0, 0.7);
-        }
-
-        .progress-rect[data-selected="true"] {
-            box-shadow: 0 0 20px 5px rgba(0, 0, 255, 0.8);
+        /* Focus styles for accessibility */
+        .progress-circle:focus {
+            box-shadow: 0 0 15px rgba(0, 0, 255, 0.5);
         }
 
         .keypad-overlay {
@@ -254,6 +280,45 @@
         .keypad .confirm:hover {
             background: #45a049;
         }
+
+        /* Media Queries for Responsive Design */
+        @media (max-width: 768px) {
+            .progress-circle-container {
+                gap: 15px;
+            }
+
+            .progress-circle {
+                width: 70px;
+                height: 70px;
+            }
+
+            .progress-circle-content {
+                font-size: 0.7rem;
+            }
+
+            .class-progress-bar {
+                width: 80%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .progress-circle-container {
+                gap: 10px;
+            }
+
+            .progress-circle {
+                width: 60px;
+                height: 60px;
+            }
+
+            .progress-circle-content {
+                font-size: 0.6rem;
+            }
+
+            .class-progress-bar {
+                width: 90%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -282,22 +347,22 @@
     <div class="grid-container" id="student-grid"></div>
 
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
-    <div id="keypad" class="keypad">
-        <button class="close-button" onclick="closeKeypad()">✖</button>
-        <div id="keypad-display" class="keypad-display"></div>
+    <div id="keypad" class="keypad" role="dialog" aria-modal="true" aria-labelledby="keypad-display">
+        <button class="close-button" onclick="closeKeypad()" aria-label="Close keypad">✖</button>
+        <div id="keypad-display" class="keypad-display" aria-live="polite"></div>
         <div class="keypad-grid">
-            <div class="key" onclick="addKey('1')">1</div>
-            <div class="key" onclick="addKey('2')">2</div>
-            <div class="key" onclick="addKey('3')">3</div>
-            <div class="key" onclick="addKey('4')">4</div>
-            <div class="key" onclick="addKey('5')">5</div>
-            <div class="key" onclick="addKey('6')">6</div>
-            <div class="key" onclick="addKey('7')">7</div>
-            <div class="key" onclick="addKey('8')">8</div>
-            <div class="key" onclick="addKey('9')">9</div>
-            <div class="key clear" onclick="clearKeypad()">Clear</div>
-            <div class="key" onclick="addKey('0')">0</div>
-            <div class="key confirm" onclick="saveKeypad()">✔</div>
+            <div class="key" onclick="addKey('1')" tabindex="0" role="button" aria-label="Key 1">1</div>
+            <div class="key" onclick="addKey('2')" tabindex="0" role="button" aria-label="Key 2">2</div>
+            <div class="key" onclick="addKey('3')" tabindex="0" role="button" aria-label="Key 3">3</div>
+            <div class="key" onclick="addKey('4')" tabindex="0" role="button" aria-label="Key 4">4</div>
+            <div class="key" onclick="addKey('5')" tabindex="0" role="button" aria-label="Key 5">5</div>
+            <div class="key" onclick="addKey('6')" tabindex="0" role="button" aria-label="Key 6">6</div>
+            <div class="key" onclick="addKey('7')" tabindex="0" role="button" aria-label="Key 7">7</div>
+            <div class="key" onclick="addKey('8')" tabindex="0" role="button" aria-label="Key 8">8</div>
+            <div class="key" onclick="addKey('9')" tabindex="0" role="button" aria-label="Key 9">9</div>
+            <div class="key clear" onclick="clearKeypad()" tabindex="0" role="button" aria-label="Clear keypad">Clear</div>
+            <div class="key" onclick="addKey('0')" tabindex="0" role="button" aria-label="Key 0">0</div>
+            <div class="key confirm" onclick="saveKeypad()" tabindex="0" role="button" aria-label="Confirm input">✔</div>
         </div>
     </div>
 
@@ -494,6 +559,15 @@
             updateClassProgressBar();
         }
 
+        function setCircularProgress(element, percent) {
+            const circle = element.querySelector('.progress-ring__circle');
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (percent / 100) * circumference;
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = offset;
+        }
+
         function renderStudents() {
             const studentGrid = document.getElementById('student-grid');
             studentGrid.innerHTML = '';
@@ -503,31 +577,53 @@
                 card.id = `student-${student.id}`;
                 const imgPath = `${IMAGE_BASE_URL}${student.name.toLowerCase().replace(/\s+/g, '-')}.jpg`;
 
-                const readingPercent = Math.min((student.reading / MAX_READING) * 100, 100);
-                const languagePercent = Math.min((student.language / MAX_LANGUAGE) * 100, 100);
-                const quizzesPercent = Math.min((student.quizzes / MAX_QUIZZES) * 100, 100);
-
-                const readingProgress = readingPercent === 100 ? 'high' : readingPercent < 50 ? 'low' : 'medium';
-                const languageProgress = languagePercent === 100 ? 'high' : languagePercent < 50 ? 'low' : 'medium';
-                const quizzesProgress = quizzesPercent === 100 ? 'high' : quizzesPercent < 50 ? 'low' : 'medium';
-
                 card.innerHTML = `
                     <canvas id="confetti-${student.id}" class="confetti-canvas"></canvas>
                     <img src="${imgPath}" alt="${student.name}" onerror="this.src='${IMAGE_BASE_URL}default.jpg'">
                     <h3 class="student-name">${student.name}</h3>
-                    <div class="progress-rect-container">
-                        <div class="progress-rect ${readingProgress}" onclick="openKeypad(${index}, 'reading', this)" data-selected="false">
-                            Reading<br>${student.reading}
+                    <div class="progress-circle-container">
+                        <div class="progress-circle" onclick="openKeypad(${index}, 'reading', this)" data-selected="false" data-metric="reading" tabindex="0" role="button" aria-label="Reading progress: ${student.reading} out of ${MAX_READING}">
+                            <svg class="progress-ring" width="80" height="80">
+                                <circle class="progress-ring__circle" stroke="grey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
+                            </svg>
+                            <div class="progress-circle-content">
+                                <span>Reading</span><br>${student.reading}
+                            </div>
                         </div>
-                        <div class="progress-rect ${languageProgress}" onclick="openKeypad(${index}, 'language', this)" data-selected="false">
-                            Language<br>${student.language}
+                        <div class="progress-circle" onclick="openKeypad(${index}, 'language', this)" data-selected="false" data-metric="language" tabindex="0" role="button" aria-label="Language progress: ${student.language} out of ${MAX_LANGUAGE}">
+                            <svg class="progress-ring" width="80" height="80">
+                                <circle class="progress-ring__circle" stroke="grey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
+                            </svg>
+                            <div class="progress-circle-content">
+                                <span>Language</span><br>${student.language}
+                            </div>
                         </div>
-                        <div class="progress-rect ${quizzesProgress}" onclick="openKeypad(${index}, 'quizzes', this)" data-selected="false">
-                            Quizzes<br>${student.quizzes}
+                        <div class="progress-circle" onclick="openKeypad(${index}, 'quizzes', this)" data-selected="false" data-metric="quizzes" tabindex="0" role="button" aria-label="Quizzes progress: ${student.quizzes} out of ${MAX_QUIZZES}">
+                            <svg class="progress-ring" width="80" height="80">
+                                <circle class="progress-ring__circle" stroke="grey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
+                            </svg>
+                            <div class="progress-circle-content">
+                                <span>Quizzes</span><br>${student.quizzes}
+                            </div>
                         </div>
                     </div>
                 `;
                 studentGrid.appendChild(card);
+
+                // Set progress for each metric
+                const readingPercent = Math.min((student.reading / MAX_READING) * 100, 100);
+                const languagePercent = Math.min((student.language / MAX_LANGUAGE) * 100, 100);
+                const quizzesPercent = Math.min((student.quizzes / MAX_QUIZZES) * 100, 100);
+
+                const progressCircles = card.querySelectorAll('.progress-circle');
+                progressCircles.forEach(circle => {
+                    const metric = circle.getAttribute('data-metric');
+                    let percent = 0;
+                    if (metric === 'reading') percent = readingPercent;
+                    if (metric === 'language') percent = languagePercent;
+                    if (metric === 'quizzes') percent = quizzesPercent;
+                    setCircularProgress(circle, percent);
+                });
             });
 
             checkAndTriggerConfetti();
@@ -570,11 +666,15 @@
             keypad.style.display = 'block';
             document.getElementById('keypad-display').textContent = '';
 
-            document.querySelectorAll('.progress-rect').forEach(rect => {
-                rect.dataset.selected = "false";
+            // Deselect all circles
+            document.querySelectorAll('.progress-circle').forEach(circle => {
+                circle.classList.remove('selected');
             });
 
-            element.dataset.selected = "true";
+            // Select the clicked circle
+            element.classList.add('selected');
+            // Focus on the keypad for accessibility
+            keypad.focus();
         }
 
         function closeKeypad() {
@@ -627,10 +727,38 @@
             }
         }
 
+        // Initialize
         monthlyResetCheck();
         renderStudents();
         displayDaysLeft();
         showDailyQuote();
+
+        // Accessibility: Close keypad with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeKeypad();
+            }
+        });
+
+        // Accessibility: Allow keypad keys to be triggered via keyboard
+        document.querySelectorAll('.keypad .key').forEach(key => {
+            key.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    key.click();
+                }
+            });
+        });
+
+        // Accessibility: Allow progress circles to be triggered via keyboard
+        document.querySelectorAll('.progress-circle').forEach(circle => {
+            circle.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    circle.click();
+                }
+            });
+        });
     </script>
 </body>
 </html>
