@@ -79,6 +79,46 @@
             color: #555;
         }
 
+        /* Class progress container now after the quotes and sticky */
+        #progress-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: #f0f8ff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        #progress-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        #class-progress-bar {
+            position: relative;
+            width: 300px;
+            height: 30px;
+            background-color: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 0 auto; /* Center the bar */
+        }
+
+        #class-progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(135deg, #4caf50, #81c784);
+            border-radius: 15px;
+            transition: width 1s ease-in-out;
+        }
+
         /* 6 columns for student cards */
         .grid-container {
             display: grid;
@@ -87,7 +127,6 @@
             padding: 20px;
             max-width: 1200px;
             margin: 0 auto;
-            margin-top: 180px; /* Add top margin to account for fixed progress bar */
         }
 
         .student-card {
@@ -106,6 +145,7 @@
             height: 60px;
             border-radius: 50%;
             margin-bottom: 10px;
+            object-fit: cover;
         }
 
         .student-name.completed::before {
@@ -124,19 +164,22 @@
             margin: 20px 0;
         }
 
+        /* Adjust progress circles to maintain perfect shape */
         .progress-circle {
-            position: relative;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
+            background-color: #e0e0e0;
+            display: inline-flex;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
             cursor: pointer;
-            background-color: #e0e0e0;
             transition: box-shadow 0.3s;
             font-size: 0.7rem;
+            margin: 0 5px;
+            position: relative;
         }
 
         .progress-circle[data-progress="low"] {
@@ -156,16 +199,13 @@
         }
 
         .progress-circle .label {
-            position: absolute;
-            top: 25%;
-            font-size: 0.6rem;
             font-weight: bold;
             color: #333;
+            margin-bottom: 2px;
+            font-size: 0.6rem;
         }
 
         .progress-circle .value {
-            position: absolute;
-            bottom: 25%;
             font-size: 0.7rem;
             font-weight: bold;
         }
@@ -254,49 +294,6 @@
         .keypad .confirm:hover {
             background: #45a049;
         }
-
-        /* Horizontal Progress Wrapper at top */
-        #progress-wrapper {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: #f0f8ff;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-
-        #progress-label {
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        #class-progress-bar {
-            position: relative;
-            width: 300px;
-            height: 30px;
-            background-color: #e0e0e0;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        #class-progress-fill {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(135deg, #4caf50, #81c784);
-            border-radius: 15px;
-            transition: width 1s ease-in-out;
-        }
     </style>
 </head>
 <body>
@@ -314,15 +311,15 @@
         <span id="daily-quote"></span>
     </div>
 
-    <div class="grid-container" id="student-grid"></div>
-
-    <!-- Progress Wrapper with Label Above Horizontal Bar -->
+    <!-- Class Progress Wrapper placed under the quotes -->
     <div id="progress-wrapper">
         <div id="progress-label">Class Progress 🌟</div>
         <div id="class-progress-bar">
             <div id="class-progress-fill"></div>
         </div>
     </div>
+
+    <div class="grid-container" id="student-grid"></div>
 
     <div id="keypad-overlay" class="keypad-overlay" onclick="closeKeypad()"></div>
     <div id="keypad" class="keypad">
