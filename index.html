@@ -1050,7 +1050,7 @@
             const overlay = document.getElementById('keypad-overlay');
             overlay.style.display = 'block';
             keypad.style.display = 'block';
-            document.getElementById('keypad-display').textContent = activeStudent[metric];
+            document.getElementById('keypad-display').textContent = ''; // Initialize empty
 
             // Highlight Selected Circle
             document.querySelectorAll('.progress-circle').forEach(circle => {
