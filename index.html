@@ -18,12 +18,11 @@
             margin: 20px;
             font-size: 2.5rem;
             font-weight: bold;
-            /* Removed gradient from h1 */
             display: inline-block;
             padding: 10px 20px;
         }
 
-        /* New style for title text with gradient */
+        /* Separate gradient styling for title text */
         .title-text {
             background: linear-gradient(135deg, #4267b2, #3b5998);
             -webkit-background-clip: text;
@@ -122,10 +121,22 @@
             text-align: center;
             position: relative;
             overflow: hidden;
-            /* Make student cards square */
-            aspect-ratio: 1 / 1;
-            max-width: 200px; /* Adjust as needed */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            width: 200px;
+            height: 200px;
             margin: 0 auto;
+        }
+
+        .student-card canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
         }
 
         .student-card img {
@@ -147,8 +158,8 @@
 
         .progress-circle {
             position: relative;
-            width: 80px;
-            height: 80px;
+            width: 60px;
+            height: 60px;
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
             outline: none; /* Remove default focus outline */
@@ -201,7 +212,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: #333;
             text-align: center;
         }
@@ -311,12 +322,12 @@
             }
 
             .progress-circle {
-                width: 70px;
-                height: 70px;
+                width: 50px;
+                height: 50px;
             }
 
             .progress-circle-content {
-                font-size: 0.7rem;
+                font-size: 0.6rem;
             }
 
             .class-progress-bar {
@@ -324,7 +335,8 @@
             }
 
             .student-card {
-                max-width: 180px;
+                width: 180px;
+                height: 180px;
             }
         }
 
@@ -334,12 +346,12 @@
             }
 
             .progress-circle {
-                width: 60px;
-                height: 60px;
+                width: 40px;
+                height: 40px;
             }
 
             .progress-circle-content {
-                font-size: 0.6rem;
+                font-size: 0.5rem;
             }
 
             .class-progress-bar {
@@ -347,7 +359,8 @@
             }
 
             .student-card {
-                max-width: 160px;
+                width: 160px;
+                height: 160px;
             }
         }
     </style>
@@ -617,27 +630,27 @@
                     <h3 class="student-name">${student.name}</h3>
                     <div class="progress-circle-container">
                         <div class="progress-circle" onclick="openKeypad(${index}, 'reading', this)" data-selected="false" data-metric="reading" tabindex="0" role="button" aria-label="Reading progress: ${student.reading} out of ${MAX_READING}">
-                            <svg class="progress-ring" width="80" height="80">
-                                <circle class="progress-ring__background" stroke="lightgrey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
-                                <circle class="progress-ring__circle" stroke="grey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
+                            <svg class="progress-ring" width="60" height="60">
+                                <circle class="progress-ring__background" stroke="lightgrey" stroke-width="6" fill="transparent" r="25" cx="30" cy="30"/>
+                                <circle class="progress-ring__circle" stroke="grey" stroke-width="6" fill="transparent" r="25" cx="30" cy="30"/>
                             </svg>
                             <div class="progress-circle-content">
                                 <span>Reading</span><br>${student.reading}
                             </div>
                         </div>
                         <div class="progress-circle" onclick="openKeypad(${index}, 'language', this)" data-selected="false" data-metric="language" tabindex="0" role="button" aria-label="Language progress: ${student.language} out of ${MAX_LANGUAGE}">
-                            <svg class="progress-ring" width="80" height="80">
-                                <circle class="progress-ring__background" stroke="lightgrey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
-                                <circle class="progress-ring__circle" stroke="grey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
+                            <svg class="progress-ring" width="60" height="60">
+                                <circle class="progress-ring__background" stroke="lightgrey" stroke-width="6" fill="transparent" r="25" cx="30" cy="30"/>
+                                <circle class="progress-ring__circle" stroke="grey" stroke-width="6" fill="transparent" r="25" cx="30" cy="30"/>
                             </svg>
                             <div class="progress-circle-content">
                                 <span>Language</span><br>${student.language}
                             </div>
                         </div>
                         <div class="progress-circle" onclick="openKeypad(${index}, 'quizzes', this)" data-selected="false" data-metric="quizzes" tabindex="0" role="button" aria-label="Quizzes progress: ${student.quizzes} out of ${MAX_QUIZZES}">
-                            <svg class="progress-ring" width="80" height="80">
-                                <circle class="progress-ring__background" stroke="lightgrey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
-                                <circle class="progress-ring__circle" stroke="grey" stroke-width="8" fill="transparent" r="30" cx="40" cy="40"/>
+                            <svg class="progress-ring" width="60" height="60">
+                                <circle class="progress-ring__background" stroke="lightgrey" stroke-width="6" fill="transparent" r="25" cx="30" cy="30"/>
+                                <circle class="progress-ring__circle" stroke="grey" stroke-width="6" fill="transparent" r="25" cx="30" cy="30"/>
                             </svg>
                             <div class="progress-circle-content">
                                 <span>Quizzes</span><br>${student.quizzes}
@@ -646,6 +659,10 @@
                     </div>
                 `;
                 studentGrid.appendChild(card);
+
+                // Remove existing 'completed' class to prevent duplication
+                const studentNameElem = card.querySelector('.student-name');
+                studentNameElem.classList.remove('completed');
 
                 // Set progress for each metric
                 const readingPercent = Math.min((student.reading / MAX_READING) * 100, 100);
@@ -664,7 +681,6 @@
 
                 // Add medals if student is complete
                 if (isStudentComplete(student)) {
-                    const studentNameElem = card.querySelector('.student-name');
                     studentNameElem.classList.add('completed');
                 }
             });
