@@ -141,7 +141,7 @@
         }
 
         .navbar button {
-            background: rgba(0, 0, 0, 0); /* Transparent background */
+            background: none; /* Transparent background */
             border: none;
             color: #01579b; /* Dark blue text */
             font-size: 1rem;
@@ -303,9 +303,22 @@
         }
 
         .progress-circle-container.reverse-triangle {
+            display: grid;
             grid-template-areas: 
                 "reading language"
                 "quizzes quizzes";
+        }
+
+        .progress-circle[data-metric="reading"] {
+            grid-area: reading;
+        }
+
+        .progress-circle[data-metric="language"] {
+            grid-area: language;
+        }
+
+        .progress-circle[data-metric="quizzes"] {
+            grid-area: quizzes;
         }
 
         /* Student Card Styles */
@@ -1110,6 +1123,7 @@
         let homeworkAlertShown = false;
         let progressAlertShown = false;
         let studentConfettiTriggered = {}; // Object to track per student confetti
+        let gameOver = false; // Flag to prevent multiple endGame() calls
 
         // Initialize Application
         window.onload = function() {
@@ -1595,6 +1609,7 @@
         let gameRunning = false;
         let score = 0;
         let highScores = [];
+        let gameOverFlag = false; // Flag to prevent multiple endGame() calls
 
         // Game Constants
         const GRAVITY = 0.5;
@@ -1694,6 +1709,7 @@
             jellyfish = new Jellyfish();
             obstacles = [];
             score = 0;
+            gameOverFlag = false; // Reset game over flag
             loadHighScores();
 
             // Spawn initial obstacles
@@ -1743,7 +1759,9 @@
             ctx.font = '24px Montserrat';
             ctx.fillText(`Score: ${score}`, 10, 30);
 
-            animationFrameId = requestAnimationFrame(gameLoop);
+            if (!gameOverFlag) {
+                animationFrameId = requestAnimationFrame(gameLoop);
+            }
         }
 
         // Collision Detection Function
@@ -1800,6 +1818,8 @@
 
         // End the Game
         function endGame() {
+            if (gameOverFlag) return; // Prevent multiple calls
+            gameOverFlag = true; // Set flag to prevent re-entry
             stopGame();
             promptHighScore();
         }
@@ -1850,8 +1870,8 @@
             stopGame(); // Terminate the game
         }
 
-        // Initialize Leaderboard on Game Modal Load
-        document.getElementById('jellyfish-game-modal').addEventListener('load', displayLeaderboard);
+        // Removed the incorrect 'load' event listener as it doesn't work on div elements
+        // document.getElementById('jellyfish-game-modal').addEventListener('load', displayLeaderboard);
 
     </script>
 </body>
