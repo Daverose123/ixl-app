@@ -630,9 +630,7 @@
             <button onclick="selectOption('progress')" aria-label="Record IXL and Read Theory Progress">
                 📈 Record Progress
             </button>
-            <button onclick="selectOption('both')" aria-label="Use Both Trackers">
-                🐋 Use Both
-            </button>
+            <!-- Removed 'Use Both' Option as per Bug Fix -->
         </div>
     </div>
 
@@ -696,14 +694,13 @@
     </div>
 
     <!-- Reset Modal -->
-    <div class="reset-modal-overlay" id="reset-modal-overlay" onclick="closeResetModal()">
-        <div class="reset-modal" onclick="event.stopPropagation()">
-            <h3>🔒 Enter PIN to Reset Data</h3>
-            <input type="password" id="reset-pin" placeholder="Enter PIN" maxlength="4" aria-label="Reset PIN">
-            <div>
-                <button onclick="confirmReset()" aria-label="Confirm Reset">Reset</button>
-                <button onclick="closeResetModal()" aria-label="Cancel Reset">Cancel</button>
-            </div>
+    <div class="reset-modal-overlay" id="reset-modal-overlay" onclick="closeResetModal()"></div>
+    <div class="reset-modal" onclick="event.stopPropagation()">
+        <h3>🔒 Enter PIN to Reset Data</h3>
+        <input type="password" id="reset-pin" placeholder="Enter PIN" maxlength="4" aria-label="Reset PIN">
+        <div>
+            <button onclick="confirmReset()" aria-label="Confirm Reset">Reset</button>
+            <button onclick="closeResetModal()" aria-label="Cancel Reset">Cancel</button>
         </div>
     </div>
 
@@ -748,11 +745,11 @@
             "Be kind, work hard, stay humble. 💕"
         ];
 
-        // Student Data
+        // Initialize all students with zero metrics to fix the initial data loading bug
         let students = JSON.parse(localStorage.getItem('students')) || [
-            { id: 1, name: "Charlene", reading: 7, language: 8, quizzes: 13, homework: false },
-            { id: 2, name: "Mieke", reading: 12, language: 2, quizzes: 3, homework: false },
-            { id: 3, name: "Asa", reading: 2, language: 9, quizzes: 0, homework: false },
+            { id: 1, name: "Charlene", reading: 0, language: 0, quizzes: 0, homework: false },
+            { id: 2, name: "Mieke", reading: 0, language: 0, quizzes: 0, homework: false },
+            { id: 3, name: "Asa", reading: 0, language: 0, quizzes: 0, homework: false },
             { id: 4, name: "Audrea", reading: 0, language: 0, quizzes: 0, homework: false },
             { id: 5, name: "Zoe", reading: 0, language: 0, quizzes: 0, homework: false },
             { id: 6, name: "Yolanda", reading: 0, language: 0, quizzes: 0, homework: false },
@@ -772,6 +769,10 @@
 
         let activeStudent = null;
         let activeMetric = null;
+
+        // Flags to prevent multiple alerts and confetti
+        let homeworkAlertShown = false;
+        let progressAlertShown = false;
 
         // Initialize Application
         window.onload = function() {
@@ -841,9 +842,9 @@
         // Celebrate Student Completion
         function celebrateStudentCompletion(student) {
             if (isStudentComplete(student)) {
-                triggerStudentConfetti();
                 const studentNameElem = document.querySelector(`#progress-card-${student.id} .student-name`);
                 if (studentNameElem && !studentNameElem.classList.contains('completed')) {
+                    triggerStudentConfetti();
                     studentNameElem.classList.add('completed');
                 }
             }
@@ -873,9 +874,10 @@
             const progressFill = document.getElementById('class-progress-fill');
             progressFill.style.width = `${progressPercent}%`;
 
-            if (progressPercent === 100) {
+            if (progressPercent === 100 && !progressAlertShown) {
                 triggerMassiveConfetti();
                 alert("🌟 Class has achieved 100% progress! Amazing job! 🌟");
+                progressAlertShown = true;
             }
         }
 
@@ -890,7 +892,7 @@
                 card.id = `homework-card-${student.id}`;
 
                 card.innerHTML = `
-                    <div class="student-avatar" onclick="toggleHomework(${student.id})" aria-label="Mark ${student.name}'s homework as ${student.homework ? 'incomplete' : 'complete'}">
+                    <div class="student-avatar" onclick="toggleHomework(${student.id})" aria-label="Mark ${student.name}'s homework as ${student.homework ? 'incomplete' : 'complete'}" tabindex="0" role="button">
                         <img src="${getAvatarURL(student.name)}" alt="${student.name}" onerror="this.src='default-avatar.png'" style="width: 100%; height: 100%; border-radius: 50%;">
                         <div class="homework-overlay" id="homework-overlay-${student.id}"></div>
                     </div>
@@ -991,13 +993,14 @@
         // Check if All Homework is Completed
         function checkAllHomework() {
             const allHomeworkDone = students.every(student => student.homework);
-            if (allHomeworkDone) {
+            if (allHomeworkDone && !homeworkAlertShown) {
                 confetti({
                     particleCount: 200,
                     spread: 70,
                     origin: { y: 0.6 }
                 });
                 alert("🎉 All homework completed! Great job! 🎉");
+                homeworkAlertShown = true;
             }
         }
 
@@ -1007,13 +1010,8 @@
                 toggleSection('homework');
             } else if (option === 'progress') {
                 toggleSection('progress');
-            } else if (option === 'both') {
-                // Show both sections
-                document.getElementById('homework-section').classList.add('active');
-                document.getElementById('progress-section').classList.add('active');
-                document.getElementById('nav-homework').classList.add('active');
-                document.getElementById('nav-progress').classList.add('active');
             }
+            // Removed 'both' option as per Bug Fix
             // Close the modal
             closeStartupModal();
         }
@@ -1105,13 +1103,14 @@
         // Check if All Progress is Complete
         function checkAllProgress() {
             const allProgressDone = students.every(student => isStudentComplete(student));
-            if (allProgressDone) {
+            if (allProgressDone && !progressAlertShown) {
                 confetti({
                     particleCount: 300,
                     spread: 70,
                     origin: { y: 0.6 }
                 });
                 alert("🎉 All students have achieved 100%! Fantastic work! 🎉");
+                progressAlertShown = true;
             }
         }
 
@@ -1140,8 +1139,14 @@
                 renderHomework();
                 renderProgress();
                 updateClassProgressBar();
+
+                // Reset alert flags
+                homeworkAlertShown = false;
+                progressAlertShown = false;
+
                 // Close the reset modal
                 closeResetModal();
+
                 // Notify user
                 alert("🔄 All data has been reset successfully! 📅");
             } else {
