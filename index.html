@@ -13,14 +13,14 @@
     <style>
         /* General Styles */
         body {
-            font-family: 'Montserrat', sans-serif; /* Professional Typography */
-            background: linear-gradient(to bottom, #e0f7fa, #b2ebf2); /* Subtle underwater gradient */
+            font-family: 'Montserrat', sans-serif;
+            background: #ffffff; /* Clean white background */
             margin: 0;
             padding: 0;
             text-align: center;
             box-sizing: border-box;
-            color: #01579b; /* Dark blue for text */
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            color: #2c3e50; /* Softer dark color for text */
+            overflow-x: hidden;
         }
 
         /* Startup Modal Styles */
@@ -117,70 +117,71 @@
 
         /* Navigation Bar Styles */
         .navbar {
-            background: linear-gradient(to right, #e0f7fa, #b2ebf2); /* Match main background */
-            padding: 15px 0;
+            background: #ffffff;
+            padding: 20px 0;
             position: sticky;
             top: 0;
             z-index: 900;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            gap: 30px;
+            border-bottom: 1px solid rgba(0, 150, 199, 0.1); /* Subtle underwater-themed border */
         }
 
-        /* Navbar Oval Buttons with Text Labels */
+        /* Navbar Button Styles */
         .navbar button.nav-button {
-            background: none; /* Transparent */
-            border: 2px solid #0288d1; /* Blue border */
-            border-radius: 25px; /* Oval shape */
-            color: #01579b; /* Dark blue text */
-            font-size: 1rem;
+            background: none;
+            border: none;
+            color: #95a5a6; /* Muted color for inactive state */
+            font-size: 0.95rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: transform 0.3s, border-color 0.3s;
-            width: 150px; /* Increased width for oval */
-            height: 50px; /* Fixed height */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
+            transition: all 0.3s ease;
+            padding: 10px 20px;
             position: relative;
         }
 
-        .navbar button.nav-button:hover {
-            transform: scale(1.05);
-            border-color: #01579b; /* Darker blue on hover */
+        .navbar button.nav-button::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #3498db; /* Underwater blue */
+            transition: width 0.3s ease;
+        }
+
+        .navbar button.nav-button:hover::after {
+            width: 100%;
         }
 
         .navbar button.nav-button.active {
-            background: #0288d1; /* Blue background when active */
-            color: white; /* White text when active */
+            color: #3498db; /* Underwater blue */
+            font-weight: 600;
         }
 
-        .navbar button.nav-button .button-content {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .navbar button.nav-button.active::after {
+            width: 100%;
         }
 
         /* Reset Button Styles */
         .navbar .reset-button {
-            background: #ff9800; /* Orange color for visibility */
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 25px;
+            background: none;
+            color: #e74c3c; /* Subtle red */
+            border: 1px solid #e74c3c;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 20px;
             cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            transition: all 0.3s ease;
         }
 
         .navbar .reset-button:hover {
-            background: #fb8c00; /* Darker orange on hover */
-            transform: scale(1.05);
+            background: #e74c3c;
+            color: white;
         }
 
         /* Countdown and Quote Styles */
@@ -228,9 +229,9 @@
             padding: 25px;
             max-width: 1200px;
             text-align: center;
-            background-color: rgba(225, 245, 254, 0.9); /* Very light blue with transparency */
+            background-color: #ffffff;
             border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(41, 128, 185, 0.05); /* Very subtle blue shadow */
             animation: fadeIn 1s ease-in-out;
             position: relative; /* For 'Uncheck All' button positioning */
         }
@@ -332,22 +333,22 @@
 
         /* Student Card Styles */
         .student-card {
-            background: linear-gradient(135deg, #bbdefb, #e3f2fd); /* Light blue gradient */
-            border-radius: 15px;
+            background: #ffffff;
+            border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(41, 128, 185, 0.08);
             text-align: center;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .student-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 25px rgba(41, 128, 185, 0.12);
         }
 
         /* Student Avatar */
@@ -418,7 +419,7 @@
             width: 80px;
             height: 80px;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s ease;
             outline: none; /* Remove default focus outline */
         }
 
@@ -429,8 +430,8 @@
         }
 
         .progress-ring__background {
-            stroke: #b3e5fc; /* Very light blue */
-            stroke-width: 8;
+            stroke: #f5f6fa;
+            stroke-width: 6; /* Thinner lines */
             fill: transparent;
         }
 
@@ -953,7 +954,7 @@
 
         // Quotes Array
         const QUOTES = [
-            "Believe in yourself, you’ve got this! 🌟",
+            "Believe in yourself, you've got this! 🌟",
             "Every mistake is a chance to learn something new. 📚",
             "Keep trying, your effort will pay off! 💪",
             "You are braver than you think and smarter than you know. 🦁",
@@ -972,7 +973,7 @@
             "Celebrate your victories, big and small. 🎉",
             "Be the reason someone smiles today. 😊",
             "The more you learn, the more you grow. 🌳",
-            "Don’t give up! Great things take time. ⏳",
+            "Don't give up! Great things take time. ⏳",
             "You can do amazing things, one step at a time. 🏅",
             "Your determination is powerful. ⚡",
             "Confidence comes from doing your best. 🌞",
