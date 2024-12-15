@@ -316,22 +316,20 @@
             position: relative;
             width: 80%;
             height: 25px;
-            background-color: #81d4fa; /* Light blue */
+            background-color: #f5f6fa;
             border-radius: 12.5px;
             margin: 0 auto 30px auto;
             overflow: hidden;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
         }
 
         .class-progress-fill {
             position: absolute;
             left: 0;
             top: 0;
-            width: 0%;
             height: 100%;
-            background: linear-gradient(90deg, #0288d1, #01579b); /* Blue gradient */
+            background: linear-gradient(90deg, #0288d1, #01579b);
             border-radius: 12.5px;
-            transition: width 0.5s ease-in-out; /* Smooth transition */
+            transition: width 0.5s ease-in-out;
         }
 
         .progress-percentage {
@@ -362,12 +360,12 @@
                 "reading language ."
                 ". quizzes .";
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: 10px;
+            grid-gap: 15px;
             justify-content: center;
             margin: 15px auto;
-            padding: 0;
+            padding: 0 25px;
             width: 100%;
-            max-width: 220px; /* Increased max-width */
+            max-width: 260px;
         }
 
         .progress-circle-container.reverse-triangle {
@@ -475,26 +473,25 @@
         /* Progress Circle Styles */
         .progress-circle {
             position: relative;
-            width: 55px; /* Increased size */
-            height: 55px;
+            width: 65px;
+            height: 65px;
             cursor: pointer;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy animation */
-            outline: none; /* Remove default focus outline */
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             margin: 0 auto;
-            display: inline-flex;
+            display: flex;
             justify-content: center;
             align-items: center;
         }
 
         .progress-circle:hover,
         .progress-circle:focus {
-            transform: scale(1.15); /* Bigger scale */
-            filter: brightness(1.1); /* Slight brightness increase */
+            transform: scale(1.15);
+            filter: brightness(1.1);
         }
 
         .progress-ring__background {
             stroke: #f5f6fa;
-            stroke-width: 6; /* Thinner lines */
+            stroke-width: 6;
             fill: transparent;
         }
 
@@ -502,26 +499,26 @@
             transition: stroke-dashoffset 1s ease-in-out;
             transform: rotate(-90deg);
             transform-origin: 50% 50%;
-            stroke-dasharray: 188.4 188.4; /* 2 * PI * 30 */
+            stroke-dasharray: 188.4 188.4;
             stroke-dashoffset: 188.4;
-            stroke-linecap: round; /* Rounded ends */
+            stroke-linecap: round;
         }
 
         /* Dynamic colors based on metric */
         .progress-circle[data-metric="reading"] .progress-ring__circle {
-            stroke: #29b6f6; /* Blue */
+            stroke: #29b6f6;
         }
 
         .progress-circle[data-metric="language"] .progress-ring__circle {
-            stroke: #26c6da; /* Teal */
+            stroke: #26c6da;
         }
 
         .progress-circle[data-metric="quizzes"] .progress-ring__circle {
-            stroke: #66bb6a; /* Green */
+            stroke: #66bb6a;
         }
 
         .progress-circle.selected .progress-ring__circle {
-            stroke: #0288d1; /* Dark blue when selected */
+            stroke: #0288d1;
             stroke-width: 10;
         }
 
@@ -531,30 +528,26 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: #01579b;
+            z-index: 1;
             line-height: 1;
-            margin: 0;
-            padding: 0;
         }
 
         /* Progress Label Styles */
         .progress-label {
-            margin-top: 5px;
-            font-size: 0.8rem;
+            margin-top: 8px;
+            font-size: 0.9rem;
             font-weight: 500;
-            color: #0288d1; /* Blue */
+            color: #0288d1;
             text-align: center;
-            width: 100%;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
+            padding: 0 5px;
         }
 
         /* Homework Section Styles */
         .homework-section {
-            display: none; /* Change from display: block */
+            display: none;
         }
 
         .homework-section.active,
@@ -564,7 +557,7 @@
 
         /* Progress Tracker Section Styles */
         .progress-section {
-            display: none; /* This was already correct */
+            display: none;
         }
 
         .progress-section.active {
@@ -634,7 +627,7 @@
             width: 80px;
             height: 80px;
             font-size: 1.5rem;
-            background: #81d4fa; /* Light blue */
+            background: #81d4fa;
             color: white;
             border-radius: 10px;
             cursor: pointer;
@@ -643,23 +636,23 @@
         }
 
         .keypad .key:hover {
-            background: #4fc3f7; /* Slightly darker blue on hover */
+            background: #4fc3f7;
         }
 
         .keypad .clear {
-            background: #ef5350; /* Red */
+            background: #ef5350;
         }
 
         .keypad .clear:hover {
-            background: #e53935; /* Darker red on hover */
+            background: #e53935;
         }
 
         .keypad .confirm {
-            background: #66bb6a; /* Green */
+            background: #66bb6a;
         }
 
         .keypad .confirm:hover {
-            background: #43a047; /* Darker green on hover */
+            background: #43a047;
         }
 
         /* Reset Modal Styles */
@@ -691,7 +684,7 @@
         .reset-modal h3 {
             font-size: 1.6rem;
             margin-bottom: 20px;
-            color: #d32f2f; /* Red */
+            color: #d32f2f;
         }
 
         .reset-modal input {
@@ -699,18 +692,18 @@
             padding: 12px;
             margin-bottom: 25px;
             font-size: 1rem;
-            border: 2px solid #0288d1; /* Blue border */
+            border: 2px solid #0288d1;
             border-radius: 5px;
             outline: none;
             transition: border 0.3s;
         }
 
         .reset-modal input:focus {
-            border-color: #01579b; /* Darker blue on focus */
+            border-color: #01579b;
         }
 
         .reset-modal button {
-            background: linear-gradient(45deg, #d32f2f, #c62828); /* Red gradient */
+            background: linear-gradient(45deg, #d32f2f, #c62828);
             border: none;
             color: white;
             padding: 12px 25px;
@@ -738,7 +731,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 2100; /* Above other modals */
+            z-index: 2100;
             animation: fadeIn 0.5s ease-in-out;
         }
 
@@ -757,26 +750,26 @@
         .celebration-modal h3 {
             font-size: 1.4rem;
             margin-bottom: 15px;
-            color: #43a047; /* Green */
+            color: #43a047;
         }
 
         /* Uncheck All Button Styles */
         .uncheck-all-button {
-            background: #ff9800; /* Orange color for visibility */
+            background: #ff9800;
             color: white;
             border: none;
-            padding: 8px 15px; /* Reduced padding */
+            padding: 8px 15px;
             font-size: 0.8rem;
             border-radius: 15px;
             cursor: pointer;
             transition: background 0.3s, transform 0.2s;
-            position: absolute; /* Position to the top-right of homework section */
+            position: absolute;
             top: 20px;
             right: 20px;
         }
 
         .uncheck-all-button:hover {
-            background: #fb8c00; /* Darker orange on hover */
+            background: #fb8c00;
             transform: scale(1.05);
         }
 
@@ -880,15 +873,15 @@
             grid-template-areas: 
                 "reading language ."
                 ". quizzes .";
-            grid-template-columns: repeat(3, 1fr); /* Three columns */
+            grid-template-columns: repeat(3, 1fr);
             grid-gap: 20px;
             justify-content: center;
         }
 
         /* Ensure Modal Buttons are Same Size */
         .modal-buttons button {
-            width: 200px; /* Fixed width */
-            height: 50px; /* Fixed height */
+            width: 200px;
+            height: 50px;
         }
 
         /* Label Styles for Progress Circles */
@@ -896,7 +889,7 @@
             margin-top: 10px;
             font-size: 1rem;
             font-weight: 500;
-            color: #0288d1; /* Blue */
+            color: #0288d1;
             text-align: center;
         }
 
@@ -920,35 +913,35 @@
         /* Update Grid Container styles to be more specific */
         .homework-section .grid-container {
             display: grid;
-            grid-template-columns: repeat(6, 1fr); /* Force 6 columns */
-            gap: 15px; /* Reduced gap */
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
             padding: 15px;
-            max-width: 1400px; /* Increased max-width to accommodate 6 cards */
+            max-width: 1400px;
             margin: 0 auto;
         }
 
         /* Add specific styles for homework student cards */
         .homework-section .student-card {
-            padding: 15px 10px; /* Reduced padding */
-            min-width: 0; /* Allow cards to shrink */
+            padding: 15px 10px;
+            min-width: 0;
         }
 
         .homework-section .student-avatar {
-            width: 60px; /* Smaller avatar */
+            width: 60px;
             height: 60px;
             margin-bottom: 10px;
         }
 
         .homework-section .student-name {
-            font-size: 0.9rem; /* Smaller font */
+            font-size: 0.9rem;
             margin-bottom: 5px;
         }
 
         /* Keep original grid layout for progress section */
         .progress-section .grid-container {
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* Change from 6 to 5 columns */
-            gap: 20px; /* Increased gap */
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
             padding: 20px;
             max-width: 1400px;
             margin: 0 auto;
@@ -961,17 +954,17 @@
                 "reading language ."
                 ". quizzes .";
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: 10px; /* Reduced gap */
+            grid-gap: 15px;
             justify-content: center;
             margin: 15px auto;
-            padding: 0;
-            width: 100%; /* Take full width */
-            max-width: 220px; /* Increased max-width */
+            padding: 0 25px;
+            width: 100%;
+            max-width: 260px;
         }
 
         /* Update Student Card Styles */
         .progress-section .student-card {
-            padding: 15px;
+            padding: 20px;
             min-width: 0;
             background: white;
             transition: transform 0.2s ease;
@@ -986,26 +979,30 @@
 
         /* Update Progress Circle Styles */
         .progress-circle {
-            width: 55px; /* Increased size */
-            height: 55px;
+            width: 65px;
+            height: 65px;
             margin: 0 auto;
-            display: inline-flex;
+            display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy animation */
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         /* Enhanced hover effect */
         .progress-circle:hover,
         .progress-circle:focus {
-            transform: scale(1.15); /* Bigger scale */
-            filter: brightness(1.1); /* Slight brightness increase */
+            transform: scale(1.15);
+            filter: brightness(1.1);
         }
 
         /* Update SVG size to match new circle size */
         .progress-circle svg {
-            width: 55px;
-            height: 55px;
+            width: 65px;
+            height: 65px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         /* Remove overlay styles */
