@@ -362,12 +362,12 @@
                 "reading language ."
                 ". quizzes .";
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: 15px;
+            grid-gap: 10px;
             justify-content: center;
-            margin: 20px auto;
+            margin: 15px auto;
             padding: 0;
-            width: 90%;
-            max-width: 280px;
+            width: 100%;
+            max-width: 220px; /* Increased max-width */
         }
 
         .progress-circle-container.reverse-triangle {
@@ -475,10 +475,10 @@
         /* Progress Circle Styles */
         .progress-circle {
             position: relative;
-            width: 70px;
-            height: 70px;
+            width: 55px; /* Increased size */
+            height: 55px;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy animation */
             outline: none; /* Remove default focus outline */
             margin: 0 auto;
             display: inline-flex;
@@ -488,8 +488,8 @@
 
         .progress-circle:hover,
         .progress-circle:focus {
-            transform: scale(1.1);
-            box-shadow: none;
+            transform: scale(1.15); /* Bigger scale */
+            filter: brightness(1.1); /* Slight brightness increase */
         }
 
         .progress-ring__background {
@@ -531,7 +531,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: #01579b;
             line-height: 1;
@@ -541,11 +541,15 @@
 
         /* Progress Label Styles */
         .progress-label {
-            margin-top: 10px;
-            font-size: 1rem;
+            margin-top: 5px;
+            font-size: 0.8rem;
             font-weight: 500;
             color: #0288d1; /* Blue */
             text-align: center;
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
         }
 
         /* Homework Section Styles */
@@ -962,7 +966,7 @@
             margin: 15px auto;
             padding: 0;
             width: 100%; /* Take full width */
-            max-width: 200px; /* Adjusted max-width */
+            max-width: 220px; /* Increased max-width */
         }
 
         /* Update Student Card Styles */
@@ -982,18 +986,26 @@
 
         /* Update Progress Circle Styles */
         .progress-circle {
-            width: 50px; /* Fixed size */
-            height: 50px;
+            width: 55px; /* Increased size */
+            height: 55px;
             margin: 0 auto;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy animation */
         }
 
-        .progress-number {
-            font-size: 0.9rem;
+        /* Enhanced hover effect */
+        .progress-circle:hover,
+        .progress-circle:focus {
+            transform: scale(1.15); /* Bigger scale */
+            filter: brightness(1.1); /* Slight brightness increase */
         }
 
-        .progress-label {
-            font-size: 0.85rem;
-            margin-top: 5px;
+        /* Update SVG size to match new circle size */
+        .progress-circle svg {
+            width: 55px;
+            height: 55px;
         }
 
         /* Remove overlay styles */
@@ -1052,6 +1064,26 @@
             font-size: 0.9rem;
             color: #666;
             margin-top: 5px;
+        }
+
+        /* Style the sort toggle button */
+        .sort-toggle {
+            background: none;
+            color: #3498db;
+            border: 1px solid #3498db;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .sort-toggle:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
         }
     </style>
 </head>
