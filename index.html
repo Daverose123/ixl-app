@@ -912,6 +912,50 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
+        /* Update Grid Container styles to be more specific */
+        .homework-section .grid-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr); /* Force 6 columns */
+            gap: 15px; /* Reduced gap */
+            padding: 15px;
+            max-width: 1400px; /* Increased max-width to accommodate 6 cards */
+            margin: 0 auto;
+        }
+
+        /* Add specific styles for homework student cards */
+        .homework-section .student-card {
+            padding: 15px 10px; /* Reduced padding */
+            min-width: 0; /* Allow cards to shrink */
+        }
+
+        .homework-section .student-avatar {
+            width: 60px; /* Smaller avatar */
+            height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .homework-section .student-name {
+            font-size: 0.9rem; /* Smaller font */
+            margin-bottom: 5px;
+        }
+
+        /* Keep original grid layout for progress section */
+        .progress-section .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Add responsive breakpoint */
+        @media (max-width: 1200px) {
+            .homework-section .grid-container {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
     </style>
 </head>
 <body>
