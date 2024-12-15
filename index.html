@@ -360,12 +360,12 @@
                 "reading language ."
                 ". quizzes .";
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: 10px;
+            grid-gap: 8px;
             justify-content: center;
             margin: 15px auto;
-            padding: 0 15px;
+            padding: 0 10px;
             width: 100%;
-            max-width: 240px;
+            max-width: 220px;
         }
 
         .progress-circle-container.reverse-triangle {
@@ -473,14 +473,11 @@
         /* Progress Circle Styles */
         .progress-circle {
             position: relative;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             cursor: pointer;
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
         .progress-circle:hover,
@@ -528,22 +525,22 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #01579b;
             z-index: 2;
             line-height: 1;
-            pointer-events: none;
         }
 
         /* Progress Label Styles */
         .progress-label {
-            margin-top: 6px;
-            font-size: 0.85rem;
+            margin-top: 4px;
+            font-size: 0.8rem;
             font-weight: 500;
             color: #0288d1;
             text-align: center;
-            padding: 0 2px;
+            padding: 0;
+            white-space: nowrap;
         }
 
         /* Homework Section Styles */
@@ -965,7 +962,7 @@
 
         /* Update Student Card Styles */
         .progress-section .student-card {
-            padding: 20px 15px;
+            padding: 15px;
             min-width: 0;
             background: white;
             transition: transform 0.2s ease;
@@ -981,8 +978,8 @@
         /* Update Progress Circle Styles */
         .progress-circle {
             position: relative;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             cursor: pointer;
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             margin: 0 auto;
@@ -997,8 +994,8 @@
 
         /* Update SVG size to match new circle size */
         .progress-circle svg {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             position: absolute;
             top: 50%;
             left: 50%;
@@ -1450,21 +1447,21 @@
                                     <div class="progress-circle" onclick="openKeypad(${student.id}, 'reading', this)" 
                                         data-selected="false" data-metric="reading" tabindex="0" 
                                         role="button" aria-label="Reading progress: ${student.reading} out of ${MAX_READING}">
-                                        <svg class="progress-ring" width="65" height="65">
+                                        <svg class="progress-ring" width="50" height="50" viewBox="0 0 50 50">
                                             <circle class="progress-ring__background" 
                                                 stroke="#f5f6fa" 
-                                                stroke-width="6" 
+                                                stroke-width="4" 
                                                 fill="transparent" 
-                                                r="27" 
-                                                cx="32.5" 
-                                                cy="32.5"/>
+                                                r="20" 
+                                                cx="25" 
+                                                cy="25"/>
                                             <circle class="progress-ring__circle" 
                                                 stroke="#29b6f6" 
-                                                stroke-width="6" 
+                                                stroke-width="4" 
                                                 fill="transparent" 
-                                                r="27" 
-                                                cx="32.5" 
-                                                cy="32.5"/>
+                                                r="20" 
+                                                cx="25" 
+                                                cy="25"/>
                                         </svg>
                                         <div class="progress-number">${student.reading}</div>
                                     </div>
@@ -1474,21 +1471,21 @@
                                     <div class="progress-circle" onclick="openKeypad(${student.id}, 'language', this)" 
                                         data-selected="false" data-metric="language" tabindex="0" 
                                         role="button" aria-label="Language progress: ${student.language} out of ${MAX_LANGUAGE}">
-                                        <svg class="progress-ring" width="65" height="65">
+                                        <svg class="progress-ring" width="50" height="50" viewBox="0 0 50 50">
                                             <circle class="progress-ring__background" 
                                                 stroke="#f5f6fa" 
-                                                stroke-width="6" 
+                                                stroke-width="4" 
                                                 fill="transparent" 
-                                                r="27" 
-                                                cx="32.5" 
-                                                cy="32.5"/>
+                                                r="20" 
+                                                cx="25" 
+                                                cy="25"/>
                                             <circle class="progress-ring__circle" 
                                                 stroke="#26c6da" 
-                                                stroke-width="6" 
+                                                stroke-width="4" 
                                                 fill="transparent" 
-                                                r="27" 
-                                                cx="32.5" 
-                                                cy="32.5"/>
+                                                r="20" 
+                                                cx="25" 
+                                                cy="25"/>
                                         </svg>
                                         <div class="progress-number">${student.language}</div>
                                     </div>
@@ -1498,21 +1495,21 @@
                                     <div class="progress-circle" onclick="openKeypad(${student.id}, 'quizzes', this)" 
                                         data-selected="false" data-metric="quizzes" tabindex="0" 
                                         role="button" aria-label="Quizzes progress: ${student.quizzes} out of ${MAX_QUIZZES}">
-                                        <svg class="progress-ring" width="65" height="65">
+                                        <svg class="progress-ring" width="50" height="50" viewBox="0 0 50 50">
                                             <circle class="progress-ring__background" 
                                                 stroke="#f5f6fa" 
-                                                stroke-width="6" 
+                                                stroke-width="4" 
                                                 fill="transparent" 
-                                                r="27" 
-                                                cx="32.5" 
-                                                cy="32.5"/>
+                                                r="20" 
+                                                cx="25" 
+                                                cy="25"/>
                                             <circle class="progress-ring__circle" 
                                                 stroke="#66bb6a" 
-                                                stroke-width="6" 
+                                                stroke-width="4" 
                                                 fill="transparent" 
-                                                r="27" 
-                                                cx="32.5" 
-                                                cy="32.5"/>
+                                                r="20" 
+                                                cx="25" 
+                                                cy="25"/>
                                         </svg>
                                         <div class="progress-number">${student.quizzes}</div>
                                     </div>
