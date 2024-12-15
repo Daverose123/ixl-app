@@ -365,12 +365,12 @@
                 "reading language ."
                 ". quizzes .";
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: 4px;
+            grid-gap: 2px;
             justify-content: center;
-            margin: 8px auto;
+            margin: 6px auto;
             padding: 0;
             width: 100%;
-            max-width: 160px;
+            max-width: 150px;
         }
 
         .progress-circle-container.reverse-triangle {
@@ -545,14 +545,15 @@
         /* Progress Label Styles */
         .progress-label {
             margin-top: 2px;
-            font-size: 0.65rem;
+            font-size: 0.55rem;
             font-weight: 500;
             color: #0288d1;
             text-align: center;
             padding: 0;
             white-space: nowrap;
-            transform: scale(0.9);
+            transform: scale(0.8);
             transform-origin: center top;
+            letter-spacing: -0.3px;
         }
 
         /* Homework Section Styles */
@@ -910,6 +911,7 @@
             align-items: center;
             padding: 0;
             width: 100%;
+            margin: 0 -2px;
         }
 
         /* Update SVG positioning */
@@ -964,12 +966,12 @@
                 "reading language ."
                 ". quizzes .";
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: 10px;
+            grid-gap: 2px;
             justify-content: center;
-            margin: 10px auto;
+            margin: 6px auto;
             padding: 0;
             width: 100%;
-            max-width: 160px;
+            max-width: 150px;
         }
 
         /* Update Student Card Styles */
@@ -1108,21 +1110,54 @@
         /* Make labels even smaller */
         .progress-label {
             margin-top: 2px;
-            font-size: 0.6rem; /* Reduced from 0.65rem */
+            font-size: 0.55rem;
             font-weight: 500;
             color: #0288d1;
             text-align: center;
             padding: 0;
             white-space: nowrap;
-            transform: scale(0.85); /* Reduced from 0.9 */
+            transform: scale(0.8);
             transform-origin: center top;
-            letter-spacing: -0.2px; /* Slightly tighter letter spacing */
+            letter-spacing: -0.3px;
         }
 
         /* Update Progress Circle Container spacing */
         .progress-circle-container {
-            grid-gap: 3px; /* Reduced from 4px */
-            margin: 6px auto; /* Reduced from 8px */
+            display: grid;
+            grid-template-areas: 
+                "reading language ."
+                ". quizzes .";
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 2px;
+            justify-content: center;
+            margin: 6px auto;
+            padding: 0;
+            width: 100%;
+            max-width: 150px;
+        }
+
+        /* Make labels even smaller */
+        .progress-label {
+            margin-top: 2px;
+            font-size: 0.55rem;
+            font-weight: 500;
+            color: #0288d1;
+            text-align: center;
+            padding: 0;
+            white-space: nowrap;
+            transform: scale(0.8);
+            transform-origin: center top;
+            letter-spacing: -0.3px;
+        }
+
+        /* Adjust circle group spacing */
+        .progress-circle-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0;
+            width: 100%;
+            margin: 0 -2px;
         }
     </style>
 </head>
