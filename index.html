@@ -241,41 +241,28 @@
 
         /* Countdown and Quote Styles */
         .countdown-container, .quote-container {
-            margin: 25px auto;
-            padding: 15px;
+            margin: 15px auto;
+            padding: 10px;
             max-width: 800px;
-            text-align: center;
+            text-align: left;
+            padding-left: 40px;
         }
 
-        .countdown-container span, .quote-container span {
-            font-size: 1.3rem;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
-            color: #0288d1; /* Blue */
+        .countdown-container span {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #3498db;
+            display: inline-block;
         }
 
-        /* Quote Section Redesign */
         .quote-container {
             font-style: italic;
-            font-size: 1.1rem;
-            color: #0277bd; /* Slightly darker blue */
-            padding: 20px;
-            /* Removed background and box-shadow for minimalistic look */
-            position: relative;
-            overflow: hidden;
-            /* Added label */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-size: 1rem;
+            color: #0277bd;
         }
 
         .quote-container::before {
-            content: "📜 Quote of the Day";
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #01579b; /* Dark blue */
+            display: none;
         }
 
         /* Progress and Homework Section Styles */
@@ -292,23 +279,15 @@
         }
 
         .progress-section h2, .homework-section h2 {
-            font-size: 1.8rem;
-            margin-bottom: 25px;
-            color: #01579b; /* Dark blue */
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #01579b;
             position: relative;
             display: inline-block;
         }
 
         .progress-section h2::after, .homework-section h2::after {
-            content: '';
-            position: absolute;
-            width: 50px;
-            height: 3px;
-            background-color: #0288d1;
-            left: 50%;
-            bottom: -10px;
-            transform: translateX(-50%);
-            border-radius: 2px;
+            display: none;
         }
 
         /* Class Progress Bar */
@@ -1337,30 +1316,21 @@
 
         function displayDaysLeft() {
             const daysLeft = calculateDaysLeft();
-            const mainDaysLeft = document.getElementById('days-left');
-            const navbarDaysLeft = document.getElementById('navbar-days-left');
-            const text = `📅 ${daysLeft} days left`;
-            
-            mainDaysLeft.textContent = text;
-            navbarDaysLeft.textContent = text;
+            const daysLeftElem = document.getElementById('days-left');
+            daysLeftElem.textContent = `📅 ${daysLeft} days left until end of month`;
         }
 
         // Display Daily Quote
         function showDailyQuote() {
             if (!QUOTES.length) {
-                const defaultQuote = "Stay motivated and keep learning!";
-                document.getElementById('daily-quote').textContent = defaultQuote;
-                document.getElementById('navbar-quote').textContent = defaultQuote;
+                document.getElementById('daily-quote').textContent = "Stay motivated and keep learning!";
                 return;
             }
-            
             const today = new Date();
             const dayOfMonth = today.getDate();
             const quoteIndex = (dayOfMonth - 1) % QUOTES.length;
-            const quote = QUOTES[quoteIndex];
-            
-            document.getElementById('daily-quote').textContent = quote;
-            document.getElementById('navbar-quote').textContent = quote;
+            const quoteElement = document.getElementById('daily-quote');
+            quoteElement.textContent = `"${QUOTES[quoteIndex]}"`;
         }
 
         // Save Data to Local Storage
