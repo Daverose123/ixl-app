@@ -1074,17 +1074,28 @@
             margin-top: 5px;
         }
 
-        /* Style the sort toggle button */
-        .sort-toggle {
+        /* Button Container for Progress Section Controls */
+        .progress-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        /* Style both buttons consistently */
+        .sort-toggle, .reset-button {
             background: none;
-            color: #3498db;
-            border: 1px solid #3498db;
             padding: 8px 16px;
             font-size: 0.9rem;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-bottom: 20px;
+        }
+
+        /* Sort Toggle specific styles */
+        .sort-toggle {
+            color: #3498db;
+            border: 1px solid #3498db;
         }
 
         .sort-toggle:hover {
@@ -1094,70 +1105,17 @@
             box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
         }
 
-        /* Update the student card transition */
-        .student-card {
-            /* ... existing styles ... */
-            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* Reset Button specific styles */
+        .reset-button {
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
         }
 
-        /* Add transition class for movement */
-        .student-card.moving {
-            transform: scale(1.02);
-            box-shadow: 0 8px 30px rgba(41, 128, 185, 0.15);
-            z-index: 2;
-        }
-
-        /* Make labels even smaller */
-        .progress-label {
-            margin-top: 2px;
-            font-size: 0.55rem;
-            font-weight: 500;
-            color: #0288d1;
-            text-align: center;
-            padding: 0;
-            white-space: nowrap;
-            transform: scale(0.8);
-            transform-origin: center top;
-            letter-spacing: -0.3px;
-        }
-
-        /* Update Progress Circle Container spacing */
-        .progress-circle-container {
-            display: grid;
-            grid-template-areas: 
-                "reading language ."
-                ". quizzes .";
-            grid-template-columns: repeat(3, 1fr);
-            grid-gap: 2px;
-            justify-content: center;
-            margin: 6px auto;
-            padding: 0;
-            width: 100%;
-            max-width: 150px;
-        }
-
-        /* Make labels even smaller */
-        .progress-label {
-            margin-top: 2px;
-            font-size: 0.55rem;
-            font-weight: 500;
-            color: #0288d1;
-            text-align: center;
-            padding: 0;
-            white-space: nowrap;
-            transform: scale(0.8);
-            transform-origin: center top;
-            letter-spacing: -0.3px;
-        }
-
-        /* Adjust circle group spacing */
-        .progress-circle-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0;
-            width: 100%;
-            margin: 0 -2px;
+        .reset-button:hover {
+            background: #e74c3c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.2);
         }
     </style>
 </head>
@@ -1196,7 +1154,6 @@
                     Record Progress
                 </div>
             </button>
-            <button class="reset-button" onclick="openResetModal()" aria-label="Reset Data">🔄 Reset</button>
         </div>
     </div>
 
@@ -1224,9 +1181,10 @@
         <!-- Progress Tracker -->
         <div class="progress-section" id="progress-section">
             <h2>📚 IXL & Read Theory Progress Tracker 🎯</h2>
-            <button class="sort-toggle" onclick="toggleSortOrder()">
-                Toggle Sort Order
-            </button>
+            <div class="progress-controls">
+                <button class="sort-toggle" onclick="toggleSortOrder()">Toggle Sort Order</button>
+                <button class="reset-button" onclick="openResetModal()">🔄 Reset Progress</button>
+            </div>
             <div class="class-progress-bar">
                 <div class="class-progress-fill" id="class-progress-fill"></div>
                 <span class="progress-percentage" id="progress-percentage">0%</span>
