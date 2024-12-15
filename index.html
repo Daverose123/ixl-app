@@ -123,19 +123,26 @@
             top: 0;
             z-index: 900;
             display: flex;
-            justify-content: space-between;
+            justify-content: center; /* Center by default */
             align-items: center;
-            padding: 0 40px;
+            gap: 30px;
+            transition: all 0.3s ease;
             border-bottom: 1px solid rgba(0, 150, 199, 0.1);
         }
 
-        /* Add styles for the new info container */
+        .navbar.scrolled {
+            justify-content: space-between;
+            padding: 20px 40px;
+        }
+
+        /* Navbar Info Styles */
         .navbar-info {
-            display: flex;
+            display: none; /* Hidden by default */
             align-items: center;
             gap: 30px;
             font-size: 0.9rem;
             color: #3498db;
+            transition: all 0.3s ease;
         }
 
         .navbar-countdown {
@@ -150,11 +157,12 @@
             text-overflow: ellipsis;
         }
 
-        /* Update the navigation buttons container */
+        /* Navigation Buttons Container */
         .navbar-buttons {
             display: flex;
             gap: 30px;
             align-items: center;
+            transition: all 0.3s ease;
         }
 
         /* Responsive adjustments */
@@ -906,8 +914,8 @@
     <!-- Navigation Bar -->
     <div class="navbar">
         <div class="navbar-info">
-            <div class="navbar-countdown" id="days-left">📅 Only loading days left...</div>
-            <div class="navbar-quote" id="navbar-quote">Loading quote...</div>
+            <span class="navbar-countdown" id="navbar-days-left"></span>
+            <span class="navbar-quote" id="navbar-quote"></span>
         </div>
         <div class="navbar-buttons">
             <button id="nav-homework" class="nav-button active" onclick="toggleSection('homework')" aria-label="Navigate to Homework">
@@ -929,7 +937,7 @@
         <span id="days-left">📅 Only loading days left...</span>
     </div>
 
-    <div class="quote-container" id="quote-container">
+    <div class="quote-container">
         <span id="daily-quote">📜 Loading daily quote...</span>
     </div>
 
@@ -1100,21 +1108,30 @@
 
         function displayDaysLeft() {
             const daysLeft = calculateDaysLeft();
-            const daysLeftElem = document.getElementById('days-left');
-            daysLeftElem.textContent = `📅 ${daysLeft} days left`;
+            const mainDaysLeft = document.getElementById('days-left');
+            const navbarDaysLeft = document.getElementById('navbar-days-left');
+            const text = `📅 ${daysLeft} days left`;
+            
+            mainDaysLeft.textContent = text;
+            navbarDaysLeft.textContent = text;
         }
 
         // Display Daily Quote
         function showDailyQuote() {
             if (!QUOTES.length) {
-                document.getElementById('navbar-quote').textContent = "Stay motivated and keep learning!";
+                const defaultQuote = "Stay motivated and keep learning!";
+                document.getElementById('daily-quote').textContent = defaultQuote;
+                document.getElementById('navbar-quote').textContent = defaultQuote;
                 return;
             }
+            
             const today = new Date();
             const dayOfMonth = today.getDate();
             const quoteIndex = (dayOfMonth - 1) % QUOTES.length;
-            const quoteElement = document.getElementById('navbar-quote');
-            quoteElement.textContent = QUOTES[quoteIndex];
+            const quote = QUOTES[quoteIndex];
+            
+            document.getElementById('daily-quote').textContent = quote;
+            document.getElementById('navbar-quote').textContent = quote;
         }
 
         // Save Data to Local Storage
@@ -1543,6 +1560,40 @@
 
         // Fix 4: Grouped Each Progress Circle with Its Label
         // - Created a .progress-circle-group div to encapsulate each circle and its label, preventing label stacking.
+
+        // Add this JavaScript function
+        function handleScroll() {
+            const navbar = document.querySelector('.navbar');
+            const navbarInfo = document.querySelector('.navbar-info');
+            const navbarButtons = document.querySelector('.navbar-buttons');
+            const countdownContainer = document.querySelector('.countdown-container');
+            const quoteContainer = document.querySelector('.quote-container');
+            
+            // Get scroll position
+            const scrollPosition = window.scrollY;
+            
+            // Define when to trigger the change (e.g., after scrolling 100px)
+            if (scrollPosition > 100) {
+                // Move info to navbar
+                navbar.classList.add('scrolled');
+                navbarInfo.style.display = 'flex';
+                
+                // Hide original containers
+                countdownContainer.style.visibility = 'hidden';
+                quoteContainer.style.visibility = 'hidden';
+            } else {
+                // Revert to original state
+                navbar.classList.remove('scrolled');
+                navbarInfo.style.display = 'none';
+                
+                // Show original containers
+                countdownContainer.style.visibility = 'visible';
+                quoteContainer.style.visibility = 'visible';
+            }
+        }
+
+        // Add scroll event listener
+        window.addEventListener('scroll', handleScroll);
     </script>
 </body>
 </html>
