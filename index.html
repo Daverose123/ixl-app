@@ -483,16 +483,17 @@
 
         /* Homework Section Styles */
         .homework-section {
-            display: block; /* Visible by default */
+            display: none; /* Change from display: block */
         }
 
-        .homework-section.active {
+        .homework-section.active,
+        .progress-section.active {
             display: block;
         }
 
         /* Progress Tracker Section Styles */
         .progress-section {
-            display: none; /* Hidden by default */
+            display: none; /* This was already correct */
         }
 
         .progress-section.active {
@@ -1022,6 +1023,10 @@
                 modal.style.display = 'flex';
             }
 
+            // Set initial section visibility
+            document.getElementById('homework-section').classList.add('active');
+            document.getElementById('progress-section').classList.remove('active');
+
             // Render Sections
             renderHomework();
             renderProgress();
@@ -1269,16 +1274,21 @@
 
         // Toggle Sections Based on Navigation
         function toggleSection(section) {
+            const homeworkSection = document.getElementById('homework-section');
+            const progressSection = document.getElementById('progress-section');
+            const navHomework = document.getElementById('nav-homework');
+            const navProgress = document.getElementById('nav-progress');
+
             if (section === 'homework') {
-                document.getElementById('homework-section').classList.add('active');
-                document.getElementById('progress-section').classList.remove('active');
-                document.getElementById('nav-homework').classList.add('active');
-                document.getElementById('nav-progress').classList.remove('active');
+                homeworkSection.classList.add('active');
+                progressSection.classList.remove('active');
+                navHomework.classList.add('active');
+                navProgress.classList.remove('active');
             } else if (section === 'progress') {
-                document.getElementById('progress-section').classList.add('active');
-                document.getElementById('homework-section').classList.remove('active');
-                document.getElementById('nav-progress').classList.add('active');
-                document.getElementById('nav-homework').classList.remove('active');
+                progressSection.classList.add('active');
+                homeworkSection.classList.remove('active');
+                navProgress.classList.add('active');
+                navHomework.classList.remove('active');
             }
         }
 
