@@ -338,9 +338,14 @@
             top: 0;
             left: 0;
             text-align: center;
-            color: #ffffff;
+            color: #333333;
             font-weight: bold;
-            line-height: 25px; /* Match the height of the progress bar */
+            line-height: 25px;
+            text-shadow: 
+                -1px -1px 0 #fff,
+                1px -1px 0 #fff,
+                -1px 1px 0 #fff,
+                1px 1px 0 #fff;
         }
 
         /* Grid Container */
@@ -478,6 +483,11 @@
             cursor: pointer;
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             margin: 0 auto;
+            outline: none;
+        }
+
+        .progress-circle:focus {
+            outline: none;
         }
 
         .progress-circle:hover,
@@ -516,7 +526,7 @@
 
         .progress-circle.selected .progress-ring__circle {
             stroke: #0288d1;
-            stroke-width: 10;
+            stroke-width: 4;
         }
 
         /* Progress Number Styles */
@@ -535,7 +545,7 @@
         /* Progress Label Styles */
         .progress-label {
             margin-top: 3px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 500;
             color: #0288d1;
             text-align: center;
