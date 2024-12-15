@@ -123,10 +123,57 @@
             top: 0;
             z-index: 900;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            border-bottom: 1px solid rgba(0, 150, 199, 0.1);
+        }
+
+        /* Add styles for the new info container */
+        .navbar-info {
+            display: flex;
             align-items: center;
             gap: 30px;
-            border-bottom: 1px solid rgba(0, 150, 199, 0.1); /* Subtle underwater-themed border */
+            font-size: 0.9rem;
+            color: #3498db;
+        }
+
+        .navbar-countdown {
+            font-weight: 500;
+        }
+
+        .navbar-quote {
+            font-style: italic;
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Update the navigation buttons container */
+        .navbar-buttons {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .navbar-quote {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                padding: 10px 20px;
+                gap: 10px;
+            }
+            
+            .navbar-info {
+                order: -1;
+            }
         }
 
         /* Navbar Button Styles */
@@ -858,17 +905,23 @@
 
     <!-- Navigation Bar -->
     <div class="navbar">
-        <button id="nav-homework" class="nav-button active" onclick="toggleSection('homework')" aria-label="Navigate to Homework">
-            <div class="button-content">
-                Check Homework
-            </div>
-        </button>
-        <button id="nav-progress" class="nav-button" onclick="toggleSection('progress')" aria-label="Navigate to Progress">
-            <div class="button-content">
-                Record Progress
-            </div>
-        </button>
-        <button class="reset-button" onclick="openResetModal()" aria-label="Reset Data">🔄 Reset</button>
+        <div class="navbar-info">
+            <div class="navbar-countdown" id="days-left">📅 Only loading days left...</div>
+            <div class="navbar-quote" id="navbar-quote">Loading quote...</div>
+        </div>
+        <div class="navbar-buttons">
+            <button id="nav-homework" class="nav-button active" onclick="toggleSection('homework')" aria-label="Navigate to Homework">
+                <div class="button-content">
+                    Check Homework
+                </div>
+            </button>
+            <button id="nav-progress" class="nav-button" onclick="toggleSection('progress')" aria-label="Navigate to Progress">
+                <div class="button-content">
+                    Record Progress
+                </div>
+            </button>
+            <button class="reset-button" onclick="openResetModal()" aria-label="Reset Data">🔄 Reset</button>
+        </div>
     </div>
 
     <!-- Countdown and Quote Sections -->
@@ -1048,21 +1101,19 @@
         function displayDaysLeft() {
             const daysLeft = calculateDaysLeft();
             const daysLeftElem = document.getElementById('days-left');
-            daysLeftElem.textContent = `📅 Only ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left this month! Keep going! 🎉`;
+            daysLeftElem.textContent = `📅 ${daysLeft} days left`;
         }
 
         // Display Daily Quote
         function showDailyQuote() {
             if (!QUOTES.length) {
-                document.getElementById('daily-quote').textContent = "📜 Stay motivated and keep learning!";
+                document.getElementById('navbar-quote').textContent = "Stay motivated and keep learning!";
                 return;
             }
             const today = new Date();
             const dayOfMonth = today.getDate();
             const quoteIndex = (dayOfMonth - 1) % QUOTES.length;
-            const quoteElement = document.getElementById('daily-quote');
-
-            // No animations: Directly set the quote
+            const quoteElement = document.getElementById('navbar-quote');
             quoteElement.textContent = QUOTES[quoteIndex];
         }
 
