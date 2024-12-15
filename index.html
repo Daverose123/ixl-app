@@ -143,16 +143,23 @@
             font-size: 0.9rem;
             color: #3498db;
             transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 600px; /* Adjust based on your needs */
+        }
+
+        .navbar.scrolled .navbar-info {
+            display: flex;
         }
 
         .navbar-countdown {
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .navbar-quote {
             font-style: italic;
-            max-width: 300px;
-            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
@@ -1118,10 +1125,6 @@
 
     <!-- Navigation Bar -->
     <div class="navbar">
-        <div class="navbar-info">
-            <span class="navbar-countdown" id="navbar-days-left"></span>
-            <span class="navbar-quote" id="navbar-quote"></span>
-        </div>
         <div class="navbar-buttons">
             <button id="nav-homework" class="nav-button active" onclick="toggleSection('homework')" aria-label="Navigate to Homework">
                 <div class="button-content">
@@ -1133,6 +1136,10 @@
                     Record Progress
                 </div>
             </button>
+        </div>
+        <div class="navbar-info">
+            <span class="navbar-countdown" id="navbar-days-left"></span>
+            <span class="navbar-quote" id="navbar-quote"></span>
         </div>
     </div>
 
@@ -1316,21 +1323,30 @@
 
         function displayDaysLeft() {
             const daysLeft = calculateDaysLeft();
-            const daysLeftElem = document.getElementById('days-left');
-            daysLeftElem.textContent = `📅 ${daysLeft} days left until end of month`;
+            const mainDisplay = document.getElementById('days-left');
+            const navbarDisplay = document.getElementById('navbar-days-left');
+            const text = `📅 ${daysLeft} days left until end of month`;
+            
+            mainDisplay.textContent = text;
+            navbarDisplay.textContent = text;
         }
 
         // Display Daily Quote
         function showDailyQuote() {
             if (!QUOTES.length) {
-                document.getElementById('daily-quote').textContent = "Stay motivated and keep learning!";
+                const defaultQuote = "Quote of the Day: Stay motivated and keep learning!";
+                document.getElementById('daily-quote').textContent = defaultQuote;
+                document.getElementById('navbar-quote').textContent = defaultQuote;
                 return;
             }
+            
             const today = new Date();
             const dayOfMonth = today.getDate();
             const quoteIndex = (dayOfMonth - 1) % QUOTES.length;
-            const quoteElement = document.getElementById('daily-quote');
-            quoteElement.textContent = `"${QUOTES[quoteIndex]}"`;
+            const quote = `Quote of the Day: "${QUOTES[quoteIndex]}"`;
+            
+            document.getElementById('daily-quote').textContent = quote;
+            document.getElementById('navbar-quote').textContent = quote;
         }
 
         // Save Data to Local Storage
