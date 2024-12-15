@@ -364,9 +364,10 @@
             grid-template-columns: repeat(3, 1fr);
             grid-gap: 15px;
             justify-content: center;
-            margin: 20px 0;
+            margin: 20px auto;
             padding: 0;
-            width: 100%;
+            width: 90%;
+            max-width: 280px;
         }
 
         .progress-circle-container.reverse-triangle {
@@ -396,7 +397,7 @@
             box-shadow: 0 4px 15px rgba(41, 128, 185, 0.08);
             text-align: center;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -480,12 +481,15 @@
             transition: transform 0.3s ease;
             outline: none; /* Remove default focus outline */
             margin: 0 auto;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .progress-circle:hover,
         .progress-circle:focus {
             transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            box-shadow: none;
         }
 
         .progress-ring__background {
@@ -527,9 +531,12 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #01579b; /* Dark blue */
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #01579b;
+            line-height: 1;
+            margin: 0;
+            padding: 0;
         }
 
         /* Progress Label Styles */
@@ -896,6 +903,14 @@
             align-items: center;
             padding: 0;
             width: 100%;
+        }
+
+        /* Update SVG positioning */
+        .progress-circle svg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     </style>
 </head>
